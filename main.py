@@ -183,7 +183,7 @@ while True:
 	# Prediction update with data from previous iteration and sensorss
 	z = predict_state(gyro, z, T) # State prediction
 	z /= la.norm(z)
-	P = predict_error_covariance(gyro, z, T, P, sigma_gyro)
+	P = predict_error_covariance(gyro, z_prev, T, P, sigma_gyro)
 	# Measurement update
 	K = update_kalman_gain(P, H, ca, a, sigma_accel)
 	measurement = accel - ca*a
@@ -221,6 +221,7 @@ while True:
 	# complementary filter estimates from values of previous measurements
 	baro_prev = baro
 	a_earth_prev = a_earth
+	z_prev = z
 	# Update time of last measurement
 	prev_time = curr_time
 serial_com.close()
