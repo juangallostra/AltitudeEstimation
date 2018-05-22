@@ -164,6 +164,8 @@ count = 0
 # for complementary filter
 baro_prev = 0
 a_earth_prev = 0
+# form kalman filter
+z_prev = z
 
 while True:
 
