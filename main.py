@@ -21,7 +21,7 @@ AY_BIAS = 0.1962
 AZ_BIAS = 0
 
 # standard deviation of sensors - educated guess
-sigma_accel = 5.0
+sigma_accel = 4.0
 sigma_gyro = 2.0
 sigma_baro = 2.0
 
@@ -29,7 +29,7 @@ sigma_baro = 2.0
 g = 9.81
 
 # more guesses - it has to be less that one for sure (I think)
-ca = 0.01
+ca = -0.2
 
 # gain of complementary filter
 Kc = np.array([(2*(sigma_accel/sigma_baro))**0.5, sigma_accel/sigma_baro]) 
@@ -219,7 +219,7 @@ while True:
 	        	np.array([[1, T/2],[0, 1]]).dot(Kc)*T*(millibars_to_meters(baro_prev, ground_height) - h) + \
 	        np.array([T/2, 1])*T*a_earth_prev
 	h, v = state
-	print accel, a, z, a_earth, h*100
+	print h*100
 	# complementary filter estimates from values of previous measurements
 	baro_prev = baro
 	a_earth_prev = a_earth
