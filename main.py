@@ -29,7 +29,7 @@ sigma_baro = 2.0
 g = 9.81
 
 # more guesses - it has to be less that one for sure (I think)
-ca = -0.2
+ca = 0.5
 
 # gain of complementary filter
 Kc = np.array([(2*(sigma_accel/sigma_baro))**0.5, sigma_accel/sigma_baro]) 
