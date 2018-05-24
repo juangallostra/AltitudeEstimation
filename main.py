@@ -111,7 +111,7 @@ def predict_state(gyro, z_axis, delta_t):
 	"""
 	Predict the state evolution of the system one step ahead
 	"""
-	return (np.identity(3) - delta_t*skew(gyro)).dot(z)
+	return (np.identity(3) - delta_t*skew(gyro)).dot(z_axis)
 
 
 def predict_error_covariance(gyro, z, T, P, sigma_gyro):
