@@ -95,7 +95,7 @@ def get_prediction_covariance(v, t, sigma):
 	"""
 	Get the prediction covariance matrix
 	"""
-	Sigma = (sigma**2)*np.array([[0, 0, 0],[0, 0, 0],[0, 0, 1]]) # This is an assumption from eq. 6.a
+	Sigma = (sigma**2)*np.identity(3) 
 	return (-t**2)*skew(v).dot(Sigma).dot(skew(v))
 
 
@@ -103,7 +103,7 @@ def get_measurement_covariance(ca, a, sigma):
 	"""
 	Get the measurement covariance matrix
 	"""
-	Sigma = (sigma**2)*np.array([[0, 0, 0],[0, 0, 0],[0, 0, 1]]) # This is an assumption from eq. 6.b
+	Sigma = (sigma**2)*np.identity(3)
 	return Sigma + (1.0/3)*(ca**2)*la.norm(a)*np.identity(3)
 
 
