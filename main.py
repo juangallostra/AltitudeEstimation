@@ -151,7 +151,8 @@ serial_com = serial.Serial(PORT, BAUDRATE)
 prev_time = time.time()
 ZUPT_counter = 0
 z = np.array([0, 0, 1]) # assume earth and body frame have same orientation
-a = np.array([0, 0, g]) # then the only component of the acceleration is g in z
+a = np.array([0, 0, 0]) # the components of the acceleration are all 0
+gyro_prev = np.array([0, 0, 0])
 P = np.array([[100, 0, 0],[0, 100, 0],[0, 0, 100]])
 H = g*np.identity(3)
 v = 0 # vertical velocity
@@ -185,7 +186,7 @@ while True:
 	# Prediction update with data from previous iteration and sensorss
 	z = predict_state(gyro, z, T) # State prediction
 	z /= la.norm(z)
-	P = predict_error_covariance(gyro, z_prev, T, P, sigma_gyro)
+	P = predict_error_covariance(gyro_prev, z_prev, T, P, sigma_gyro)
 	# Measurement update
 	K = update_kalman_gain(P, H, ca, a, sigma_accel)
 	measurement = accel - ca*a
@@ -223,6 +224,8 @@ while True:
 	# complementary filter estimates from values of previous measurements
 	baro_prev = baro
 	a_earth_prev = a_earth
+	# for next kalman iteration
+	gyro_prev = gyro
 	z_prev = z
 	# Update time of last measurement
 	prev_time = curr_time
