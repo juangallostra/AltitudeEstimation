@@ -107,11 +107,11 @@ def get_measurement_covariance(ca, a, sigma):
 	return Sigma + (1.0/3)*(ca**2)*la.norm(a)*np.identity(3)
 
 
-def predict_state(gyro, z_axis, delta_t):
+def predict_state(gyro, z, T):
 	"""
 	Predict the state evolution of the system one step ahead
 	"""
-	return (np.identity(3) - delta_t*skew(gyro)).dot(z_axis)
+	return (np.identity(3) - T*skew(gyro)).dot(z)
 
 
 def predict_error_covariance(gyro, z, T, P, sigma_gyro):
