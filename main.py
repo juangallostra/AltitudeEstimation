@@ -185,14 +185,12 @@ while True:
 
 	# Prediction update with data from previous iteration and sensorss
 	z = predict_state(gyro, z, T) # State prediction
-	z /= la.norm(z)
 	P = predict_error_covariance(gyro_prev, z_prev, T, P, sigma_gyro)
 	# Measurement update
 	K = update_kalman_gain(P, H, ca, a, sigma_accel)
 	measurement = accel - ca*a
 	z = update_state_with_measurement(z, K, measurement, H)
 	P = update_error_covariance(P, H, K)
-	z /= la.norm(z)	
 	# compute the acceleration from the estimated value of z
 	a = accel - g*z
 	# print the data for debugging purposes
