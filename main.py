@@ -21,15 +21,15 @@ AY_BIAS = 0.1962
 AZ_BIAS = 0
 
 # standard deviation of sensors - educated guess
-sigma_accel = 4.0
-sigma_gyro = 2.0
-sigma_baro = 2.0
+sigma_accel = 0.02
+sigma_gyro = 0.02
+sigma_baro = 10
 
 # gravity in m/s^2 
 g = 9.81
 
 # more guesses - it has to be less that one for sure (I think)
-ca = 0.5
+ca = 0.2
 
 # gain of complementary filter
 Kc = np.array([(2*(sigma_accel/sigma_baro))**0.5, sigma_accel/sigma_baro]) 
