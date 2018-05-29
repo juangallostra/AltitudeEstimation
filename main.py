@@ -50,7 +50,7 @@ def skew(v):
 
 def vector_angle(v1, v2):
     """ 
-    Returns the angle in radians between vectors 'v1' and 'v2'    
+    Returns the angle in degrees between vectors 'v1' and 'v2'    
     """
     return np.arccos(np.dot(v1, v2) / (la.norm(v1) * la.norm(v2)))*180/np.pi
 
@@ -143,6 +143,19 @@ def update_error_covariance(P, H, K):
 	"""
 	return (np.identity(3) - K.dot(H)).dot(P) 
 
+def ZUPT(a_earth, vertical_vel, zupt_history, zupt_counter):
+	"""
+	"""
+	THRESHOLD = 0.2
+	if len(zupt_history) > zupt_counter % 12:
+		del zupt_history[zupt_counter % 12]
+	zupt_history.insert(zupt_counter % 12, a_earth)
+	 
+	if sum([val > THRESHOLD for val in zupt_history]) == 0:
+		return 0, zupt_history, zupt_counter
+	return vertical_vel, zupt_history, zupt_counter
+
+
 
 # Serial communication object
 serial_com = serial.Serial(PORT, BAUDRATE)
@@ -166,6 +179,8 @@ calibrated = False
 count = 0
 
 # for complementary filter
+zupt_history = []
+zupt_counter = 0
 baro_prev = 0
 a_earth_prev = 0
 
@@ -208,13 +223,8 @@ while True:
 	# Complementary filter for altitude and vertical velocity estimation
 
 	# ZUPT
-	if la.norm(a_earth) < 0.1:
-		ZUPT_counter += 1
-	else:
-		ZUPT_counter = 0
-	if ZUPT_counter == 12:
-		v = 0
-		ZUPT_counter = 0
+	v, zupt_history, zupt_counter = ZUPT(a_earth, v, zupt_history, zupt_counter)
+	zupt_counter += 1
 
 	state = np.array([h, v])
 	if baro_prev and a_earth_prev:
