@@ -32,7 +32,7 @@ g = 9.81
 ca = 0.2
 
 # gain of complementary filter
-Kc = np.array([(2*(sigma_accel/sigma_baro))**0.5, sigma_accel/sigma_baro]) 
+Kc = np.array([np.sqrt(2*(sigma_accel/sigma_baro)), sigma_accel/sigma_baro]) 
 
 # Serial parameters
 PORT = '/dev/ttyACM0'
