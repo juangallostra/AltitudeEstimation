@@ -7,6 +7,7 @@ with open("log.txt") as f:
 	accel = [d[0] for d in data]
 	vel = [d[1] for d in data]
 	height = [d[2] for d in data]
+	height_from_baro = [d[3] for d in data]
 
 fig = plt.figure()
 
@@ -19,6 +20,7 @@ ax1.set_ylabel('Value')
 ax1.plot(accel, c='b', label='Acceleration')
 ax1.plot(vel, c='r', label='Velocity')
 ax1.plot(height, c='g', label='Height')
+ax1.plot(height_from_baro, c='y', label='Height from baro')
 
 leg = ax1.legend()
 

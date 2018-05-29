@@ -236,6 +236,9 @@ while True:
 	v, zupt_history, zupt_counter = ZUPT(a_earth, v, zupt_history, zupt_counter)
 	zupt_counter += 1
 
+	# to see what's going on
+	print a_earth, v, h, millibars_to_meters(baro_prev, ground_height)
+
 	# complementary filter estimates from values of previous measurements
 	baro_prev = baro
 	a_earth_prev = a_earth
@@ -244,6 +247,5 @@ while True:
 	z_prev = z
 	# Update time of last measurement
 	prev_time = curr_time
-	print a_earth, v, h
 
 serial_com.close()
