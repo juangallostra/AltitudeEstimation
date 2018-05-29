@@ -9,4 +9,4 @@ The program expects the data received through the serial to be in the format:
 
 where `ax`, `ay` and `az` are measured in g-s, `gz`, `gy` and `gz` in radians per second and `pressure` in millibars. 
 
-**Note**: This project is currently under development. The final code will probaby vary from the one currently found in the repository.
+**Note**: This project is currently under development.
