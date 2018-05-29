@@ -145,6 +145,11 @@ def update_error_covariance(P, H, K):
 
 def ZUPT(a_earth, vertical_vel, zupt_history, zupt_counter):
 	"""
+	Apply zero-velocity update to limit drift error. When the
+	zero speed is detected then the speed is set to zero in 
+	preference to the complementary filter integral.
+	The zero speed is detected when during the last 12 readings
+	the estimated acceleration is lower than the threshold  
 	"""
 	THRESHOLD = 0.2
 	if len(zupt_history) > zupt_counter % 12:
@@ -154,7 +159,6 @@ def ZUPT(a_earth, vertical_vel, zupt_history, zupt_counter):
 	if sum([val > THRESHOLD for val in zupt_history]) == 0:
 		return 0, zupt_history, zupt_counter
 	return vertical_vel, zupt_history, zupt_counter
-
 
 
 # Serial communication object
@@ -219,12 +223,7 @@ while True:
 	# Acceleration in earth reference frame
 	a_earth = a.dot(z)
 
-
 	# Complementary filter for altitude and vertical velocity estimation
-
-	# ZUPT
-	v, zupt_history, zupt_counter = ZUPT(a_earth, v, zupt_history, zupt_counter)
-	zupt_counter += 1
 
 	state = np.array([h, v])
 	if baro_prev and a_earth_prev:
@@ -232,6 +231,10 @@ while True:
 	        	np.array([[1, T/2],[0, 1]]).dot(Kc)*T*(millibars_to_meters(baro_prev, ground_height) - h) + \
 	        	np.array([T/2, 1])*T*a_earth_prev
 	h, v = state
+
+	# ZUPT
+	v, zupt_history, zupt_counter = ZUPT(a_earth, v, zupt_history, zupt_counter)
+	zupt_counter += 1
 
 	# complementary filter estimates from values of previous measurements
 	baro_prev = baro
