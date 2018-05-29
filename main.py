@@ -156,7 +156,7 @@ def ZUPT(a_earth, vertical_vel, zupt_history, zupt_counter):
 		del zupt_history[zupt_counter % 12]
 	zupt_history.insert(zupt_counter % 12, a_earth)
 	 
-	if sum([val > THRESHOLD for val in zupt_history]) == 0:
+	if sum([la.norm(val) > THRESHOLD for val in zupt_history]) == 0:
 		return 0, zupt_history, zupt_counter
 	return vertical_vel, zupt_history, zupt_counter
 
