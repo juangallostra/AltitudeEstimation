@@ -21,9 +21,9 @@ AY_BIAS = 0.1962
 AZ_BIAS = 0
 
 # standard deviation of sensors - educated guess
-sigma_accel = 0.02
+sigma_accel = 0.2
 sigma_gyro = 0.2
-sigma_baro = 10
+sigma_baro = 1.25
 
 # gravity in m/s^2 
 g = 9.81
@@ -210,7 +210,7 @@ while True:
 
 	# Prediction update with data from previous iteration and sensorss
 	z = predict_state(gyro, z_prev, T) # State prediction
-	z /= la.norm(z)
+	#z /= la.norm(z)
 	P = predict_error_covariance(gyro_prev, z_prev, T, P, sigma_gyro)
 	# Measurement update
 	K = update_kalman_gain(P, H, ca, a, sigma_accel)
