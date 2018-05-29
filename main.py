@@ -171,7 +171,7 @@ H = g*np.identity(3) # observation transition matrix
 v = 0 # vertical velocity
 
 # This paramaters and variables will be calculated and used 
-#  during baro calibration and later used for altitude estimation
+# during baro calibration and later used for altitude estimation
 ground_pressure = 0
 ground_height = 0
 HISTORY = []
@@ -205,7 +205,7 @@ while True:
 	# Kalman filter for vertical acceleration estimation
 
 	# Prediction update with data from previous iteration and sensorss
-	z = predict_state(gyro, z, T) # State prediction
+	z = predict_state(gyro, z_prev, T) # State prediction
 	z /= la.norm(z)
 	P = predict_error_covariance(gyro_prev, z_prev, T, P, sigma_gyro)
 	# Measurement update
