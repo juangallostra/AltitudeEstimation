@@ -233,15 +233,16 @@ while True:
 	for delta_t in np.linspace(DESIRED_SAMPLING, T, T/DESIRED_SAMPLING):
 
 		# interpolate values
-		i_accel = np.array(interpolate_array(delta_t, DESIRED_SAMPLING, T, accel_prev, accel))
-		i_gyro = np.array(interpolate_array(delta_t, DESIRED_SAMPLING, T, gyro_prev, gyro))
-		i_baro = interpolate(delta_t, DESIRED_SAMPLING, T, baro_prev, baro)
+		i_accel = np.array(interpolate_array(delta_t, 0, T, accel_prev, accel))
+		i_gyro = np.array(interpolate_array(delta_t, 0, T, gyro_prev, gyro))
+		i_baro = interpolate(delta_t, 0, T, baro_prev, baro)
+
 		# Kalman filter for vertical acceleration estimation
 
 		# Prediction update with data from previous iteration and sensorss
-		z = predict_state(i_gyro_prev, z_prev, T) # State prediction
+		z = predict_state(i_gyro_prev, z_prev, DESIRED_SAMPLING) # State prediction
 		z /= la.norm(z)
-		P = predict_error_covariance(i_gyro_prev, z_prev, T, P, sigma_gyro)
+		P = predict_error_covariance(i_gyro_prev, z_prev, DESIRED_SAMPLING, P, sigma_gyro)
 		# Measurement update
 		K = update_kalman_gain(P, H, ca, a_sensor, sigma_accel)
 		measurement = accel - ca*a_sensor
@@ -258,9 +259,9 @@ while True:
 
 		state = np.array([h, v])
 		if baro_prev and a_earth_prev:
-			state = np.array([[1, T],[0, 1]]).dot(state) + \
-		        	np.array([[1, T/2],[0, 1]]).dot(Kc)*T*(millibars_to_meters(i_baro_prev, ground_height) - h) + \
-		        	np.array([T/2, 1])*T*a_earth_prev
+			state = np.array([[1, DESIRED_SAMPLING],[0, 1]]).dot(state) + \
+		        	np.array([[1, DESIRED_SAMPLING/2],[0, 1]]).dot(Kc)*DESIRED_SAMPLING*(millibars_to_meters(i_baro_prev, ground_height) - h) + \
+		        	np.array([T/2, 1])*DESIRED_SAMPLING*a_earth_prev
 		h, v = state
 
 		# ZUPT
