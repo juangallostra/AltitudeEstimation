@@ -229,7 +229,7 @@ while True:
 	curr_time = time.time()
 	T = curr_time - prev_time
 
-	# oversample by linear interpolation
+	# oversample via linear interpolation
 	for delta_t in np.linspace(DESIRED_SAMPLING, T, T/DESIRED_SAMPLING):
 
 		# interpolate values
