@@ -202,8 +202,7 @@ while True:
 		count += 1
 	# Calculate sampling period
 	curr_time = time.time()
-	#T = curr_time - prev_time
-	T = 0.02
+	T = curr_time - prev_time
 
 	# Kalman filter for vertical acceleration estimation
 
