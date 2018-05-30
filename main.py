@@ -11,6 +11,9 @@ import numpy.linalg as la
 
 import matplotlib.pyplot as plt
 
+# desired sampling period
+DESIRED_SAMPLING = 0.02
+
 # Sensor bias - educated guess
 GX_BIAS = 0.02
 GY_BIAS = 0.01
@@ -159,6 +162,24 @@ def ZUPT(a_earth, vertical_vel, zupt_history, zupt_counter):
 		return 0, zupt_history, zupt_counter
 	return vertical_vel, zupt_history, zupt_counter
 
+def interpolate(curr_x, x_init, x_end, y_init, y_end):
+	"""
+	Compute an intermediate value between two points by
+	linear interpolation
+	"""
+	m = (y_end - y_init)/(x_end - x_init)
+	n = y_end - x_end * m
+	return m * curr_x + n
+
+def interpolate_array(current_t, t_init, t_end, vector_init, vector_end):
+	"""
+	Compute an intermediate vector between two vectors by linear interpolation
+	of each of its components
+	"""
+	return [interpolate(current_t, t_init, t_end, values[0], values[1]) for values in zip(vector_init, vector_end)]
+
+
+
 
 # Serial communication object
 serial_com = serial.Serial(PORT, BAUDRATE)
@@ -167,8 +188,8 @@ serial_com = serial.Serial(PORT, BAUDRATE)
 prev_time = time.time()
 ZUPT_counter = 0
 z = np.array([0, 0, 1]) # assume earth and body frame have same orientation
-a_sensor = np.array([0, 0, 0]) # the components of the acceleration are all 0
-gyro_prev = np.array([0, 0, 0])
+a_sensor = np.zeros(3) # the components of the acceleration are all 0
+gyro_prev = np.zeros(3)
 P = np.array([[100, 0, 0],[0, 100, 0],[0, 0, 100]]) # initial error covariance matrix
 H = g*np.identity(3) # observation transition matrix
 v = 0 # vertical velocity
@@ -190,6 +211,10 @@ a_earth_prev = 0
 # for kalman filter
 z_prev = z
 
+# for interpolation
+i_gyro_prev = np.zeros(3)
+i_baro_prev = np.zeros(3)
+
 # This is where the magic happens,
 # so pay close attention
 while True:
@@ -204,46 +229,58 @@ while True:
 	curr_time = time.time()
 	T = curr_time - prev_time
 
-	# Kalman filter for vertical acceleration estimation
+	# oversample by linear interpolation
+	for delta_t in np.linspace(DESIRED_SAMPLING, T, T/DESIRED_SAMPLING):
 
-	# Prediction update with data from previous iteration and sensorss
-	z = predict_state(gyro_prev, z_prev, T) # State prediction
-	z /= la.norm(z)
-	P = predict_error_covariance(gyro_prev, z_prev, T, P, sigma_gyro)
-	# Measurement update
-	K = update_kalman_gain(P, H, ca, a_sensor, sigma_accel)
-	measurement = accel - ca*a_sensor
-	z = update_state_with_measurement(z, K, measurement, H)
-	z /= la.norm(z)
-	P = update_error_covariance(P, H, K)
+		# interpolate values
+		i_accel = np.array(interpolate_array(delta_t, DESIRED_SAMPLING, T, accel_prev, accel))
+		i_gyro = np.array(interpolate_array(delta_t, DESIRED_SAMPLING, T, gyro_prev, gyro))
+		i_baro = interpolate(delta_t, DESIRED_SAMPLING, T, baro_prev, baro)
+		# Kalman filter for vertical acceleration estimation
 
-	# compute the acceleration from the estimated value of z
-	a_sensor = accel - g*z
-	# Acceleration in earth reference frame
-	a_earth = np.vdot(a_sensor, z)
+		# Prediction update with data from previous iteration and sensorss
+		z = predict_state(i_gyro_prev, z_prev, T) # State prediction
+		z /= la.norm(z)
+		P = predict_error_covariance(i_gyro_prev, z_prev, T, P, sigma_gyro)
+		# Measurement update
+		K = update_kalman_gain(P, H, ca, a_sensor, sigma_accel)
+		measurement = accel - ca*a_sensor
+		z = update_state_with_measurement(z, K, measurement, H)
+		z /= la.norm(z)
+		P = update_error_covariance(P, H, K)
 
-	# Complementary filter for altitude and vertical velocity estimation
+		# compute the acceleration from the estimated value of z
+		a_sensor = i_accel - g*z
+		# Acceleration in earth reference frame
+		a_earth = np.vdot(a_sensor, z)
 
-	state = np.array([h, v])
-	if baro_prev and a_earth_prev:
-		state = np.array([[1, T],[0, 1]]).dot(state) + \
-	        	np.array([[1, T/2],[0, 1]]).dot(Kc)*T*(millibars_to_meters(baro_prev, ground_height) - h) + \
-	        	np.array([T/2, 1])*T*a_earth_prev
-	h, v = state
+		# Complementary filter for altitude and vertical velocity estimation
 
-	# ZUPT
-	v, zupt_history, zupt_counter = ZUPT(a_earth, v, zupt_history, zupt_counter)
-	zupt_counter += 1
+		state = np.array([h, v])
+		if baro_prev and a_earth_prev:
+			state = np.array([[1, T],[0, 1]]).dot(state) + \
+		        	np.array([[1, T/2],[0, 1]]).dot(Kc)*T*(millibars_to_meters(i_baro_prev, ground_height) - h) + \
+		        	np.array([T/2, 1])*T*a_earth_prev
+		h, v = state
 
-	# to see what's going on
-	print a_earth, v, h, millibars_to_meters(baro_prev, ground_height)
+		# ZUPT
+		v, zupt_history, zupt_counter = ZUPT(a_earth, v, zupt_history, zupt_counter)
+		zupt_counter += 1
 
-	# complementary filter estimates from values of previous measurements
+		# to see what's going on
+		print a_earth, v, h, millibars_to_meters(i_baro_prev, ground_height)
+
+		# complementary filter estimates from values of previous measurements
+		i_baro_prev = i_baro
+		a_earth_prev = a_earth
+		# for next kalman iteration
+		i_gyro_prev = i_gyro
+		z_prev = z
+
+	# for next interpolation
 	baro_prev = baro
-	a_earth_prev = a_earth
-	# for next kalman iteration
 	gyro_prev = gyro
-	z_prev = z
+	accel_prev = accel
 	# Update time of last measurement
 	prev_time = curr_time
 
