@@ -26,7 +26,7 @@ AZ_BIAS = 0
 # standard deviation of sensors - educated guess
 sigma_accel = 0.2
 sigma_gyro = 0.2
-sigma_baro = 10
+sigma_baro = 5
 
 # gravity in m/s^2 
 g = 9.81
