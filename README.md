@@ -35,6 +35,10 @@ Once this two things have been done it is time to load the firmware to the board
 
 ## Usage 
 
+## Results
+
+![results](https://github.com/juangallostra/altitude-estimation-two-step/blob/master/results/log.png)
+
 
 
 **Note**: This project is currently under development.
