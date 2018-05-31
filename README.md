@@ -53,7 +53,12 @@ My current workflow to use this code, which is not as elegant as it could be is:
 
 ## Results
 
+### Test 1
+
 This first results are from a test in which the board was lifted with the hand the whole length of the cable that connects it to the computer while being rotated 90 degress around the y-axis, then lowered to half the length of the cable while recovering its original orientation and finally lowered again to the ground.
 
 ![results](https://github.com/juangallostra/altitude-estimation-two-step/blob/master/results/log.png)
 
+### Test 2
+
+![results_2](https://github.com/juangallostra/altitude-estimation-two-step/blob/master/results/log_2.png)
