@@ -5,6 +5,8 @@ This work is an implementation of [this paper](http://www.koreascience.or.kr/art
 
 This Python code is a prototype-implementation of the algorithm focused on its validation. The final goal is to implement it in [Hackflight](https://github.com/simondlevy/Hackflight), a simple C++ multirotor flight control firmware for Arduino and simulators.
 
+**Note**: Although the core of the algorithm works, this project is still under development.
+
 ## Setup
 
 ### Hardware
@@ -37,8 +39,7 @@ Once this two things have been done it is time to load the firmware to the board
 
 ## Results
 
+This first results are from a test in which the board was lifted with the hand the whole length of the cable that connects it to the computer while being rotated 90 degress around the y-axis, then lowered to half the length of the cable while recovering its original orientation and finally lowered again to the ground.
+
 ![results](https://github.com/juangallostra/altitude-estimation-two-step/blob/master/results/log.png)
 
-
-
-**Note**: This project is currently under development.
