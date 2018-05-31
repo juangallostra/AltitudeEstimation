@@ -12,21 +12,12 @@ import numpy.linalg as la
 import matplotlib.pyplot as plt
 
 # desired sampling period
-DESIRED_SAMPLING = 0.02
-
-# Sensor bias - educated guess
-GX_BIAS = 0.02
-GY_BIAS = 0.01
-GZ_BIAS = 0.01
-
-AX_BIAS = 0.0981
-AY_BIAS = 0.1962
-AZ_BIAS = 0
+DESIRED_SAMPLING = 0.01
 
 # standard deviation of sensors - educated guess
 sigma_accel = 0.2
 sigma_gyro = 0.2
-sigma_baro = 5
+sigma_baro = 10
 
 # gravity in m/s^2 
 g = 9.81
@@ -86,9 +77,9 @@ def get_sensor_data(serial_obj):
 	raw_data = serial_obj.readline().rstrip().split(",")
 	data = map(float, raw_data)
 	# split into gyro and accel readings
-	accel = np.array(data[:3])*g - np.array([AX_BIAS, AY_BIAS, AZ_BIAS])
+	accel = np.array(data[:3])*g
 	# account for gyro bias
-	gyro = np.array(data[3:6]) - np.array([GX_BIAS, GY_BIAS, GZ_BIAS])
+	gyro = np.array(data[3:6])
 	# pressure
 	baro = data[-2]
 	return accel, gyro, baro
