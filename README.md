@@ -21,7 +21,9 @@ The Butterfly board is running [Hackflight](https://github.com/simondlevy/Hackfl
 
 First of all, you will need the [MS5637 Arduino library](https://github.com/BonaDrone/MS5637), originally developed by [Angus Gratton](https://github.com/projectgus), under your `Arduino/libraries` folder. Yo can simply open a terminal inside the directory and clone the repository.
 
-Secondly, you should switch to BonaDrone's `proxy-data` Hackflight's branch. This branch contains the code (under development) to read data from the baro and also proxy all the required values for the altitude estimation through the serial. This program expects the data received through the serial to be in the format:
+Secondly, you should switch to BonaDrone's `proxy-data` [Hackflight's branch](https://github.com/BonaDrone/Hackflight/tree/proxy-data). This branch contains the code (under development) to read data from the baro and also proxy all the required values for the altitude estimation through the serial. To do so you can add BonaDrone's repo as a new remote and checkout the required branch. 
+
+If you are working with different software, this program expects the data received through the serial to be in the format:
 
 `ax, ay, az, gx, gy, gz, pressure, timestamp`
 
@@ -29,7 +31,7 @@ where `ax`, `ay` and `az` are measured in g-s, `gz`, `gy` and `gz` in radians pe
 
 Once this two things have been done it is time to load the firmware to the board and run this code.
 
-**Important**: Since the sensor calibration and bias computation is performed at startup, to get good results it is key to make sure that the board is properly orientated when powered up. The proper orientation is the one shown in the previous image (the one on the right).
+**Important**: If using the above mentioned setup, the sensor calibration and bias computation is performed at startup. To get good results it is key to make sure that the board is properly orientated when powered up. The proper orientation is the one shown in the previous image (the one on the right).
 
 ## Usage 
 
