@@ -41,7 +41,7 @@ My current workflow to use this code, which is not as elegant as it could be is:
 
 1. Capture the terminal printed values into a log file:
 
-`$ python main.py > log.txt`
+		`$ python main.py > log.txt`
 
 2. Wait a bit until the calibration is done and then perform the test. When done, force quit the program with `Ctr+C`
 
@@ -49,7 +49,7 @@ My current workflow to use this code, which is not as elegant as it could be is:
 
 4. Run `plot_log.py` to get the plot of the data:
 
-`$ python plot_log.py` 
+		`$ python plot_log.py` 
 
 ## Results
 
