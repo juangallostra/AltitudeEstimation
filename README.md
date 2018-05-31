@@ -37,6 +37,20 @@ Once this two things have been done it is time to load the firmware to the board
 
 ## Usage 
 
+My current workflow to use this code, which is not as elegant as it could be is:
+
+1. Capture the terminal printed values into a log file:
+
+`$ python main.py > log.txt`
+
+2. Wait a bit until the calibration is done and then perform the test. When done, force quit the program with `Ctr+C`
+
+3. Open the logfile and remove the calibration rows (until the last column readings are `0.something`)
+
+4. Run `plot_log.py` to get the plot of the data:
+
+`$ python plot_log.py` 
+
 ## Results
 
 This first results are from a test in which the board was lifted with the hand the whole length of the cable that connects it to the computer while being rotated 90 degress around the y-axis, then lowered to half the length of the cable while recovering its original orientation and finally lowered again to the ground.
