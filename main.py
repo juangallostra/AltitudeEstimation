@@ -2,7 +2,7 @@
 # estimation from IMU readings via a Kalman filter
 #
 # Author: Juan Gallostra
-# Date: 16-05.2018
+# Date: 16-05-2018
 
 import serial
 import time
