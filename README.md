@@ -51,6 +51,19 @@ My current workflow to use this code, which is not as elegant as it could be is:
 
 		$ python plot_log.py 
 
+
+## Parameter tunning
+
+There are a few parameters that can be tuned to try to achieve higher accuracy. These paremeters are:
+
+1. `DESIRED_DAMPLING`: Desired sampling period. If the real sampling period is bigger, the data will be oversampled by a linear interpolation of two real consecutive readings.
+2. `sigma_accel`: standard deviation of the accelerometer
+3. `sigma_gyro`: standard deviation of the gyroscope
+4. `sigma_baro`: standard deviation of the barometer
+5. `ca`:  constant value for the markov chain acceleration model: a(k) = ca * a(k-1) + e
+6. `THRESHOLD`: vertical acceleration threshold. If 12 consecutive vertical acceleration values are below the threshold the vertical velocity will be set to 0.
+
+
 ## Results
 
 ### Test 1
