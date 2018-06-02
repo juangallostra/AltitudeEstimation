@@ -9,15 +9,13 @@ import time
 import numpy as np
 import numpy.linalg as la
 
-import matplotlib.pyplot as plt
-
 # desired sampling period
-DESIRED_SAMPLING = 0.01
+DESIRED_SAMPLING = 0.02
 
 # standard deviation of sensors - educated guess
 sigma_accel = 0.2
 sigma_gyro = 0.2
-sigma_baro = 10
+sigma_baro = 5
 
 # gravity in m/s^2 
 g = 9.81
