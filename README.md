@@ -75,3 +75,13 @@ This first results are from a test in which the board was lifted with the hand t
 ### Test 2
 
 ![results_2](https://github.com/juangallostra/altitude-estimation-two-step/blob/master/results/log_2.png)
+
+### Test 3
+
+![results_3](https://github.com/juangallostra/altitude-estimation-two-step/blob/master/results/log_3.png)
+
+### Test 4
+
+Lift the board to the maximum length of the cable connecting it to the computer and lower it to the ground again 3 times. After that repeat the lift-lower procedure twice but this time stopping at an altitude which is roughle the half of the cable.
+
+![results_4](https://github.com/juangallostra/altitude-estimation-two-step/blob/master/results/log_4.png)
