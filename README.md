@@ -85,3 +85,9 @@ This first results are from a test in which the board was lifted with the hand t
 Lift the board to the maximum length of the cable connecting it to the computer and lower it to the ground again 3 times. After that repeat the lift-lower procedure once but this time stopping at an altitude which is roughle the half of the cable before reaching the same altitude as before.
 
 ![results_4](https://github.com/juangallostra/altitude-estimation-two-step/blob/master/results/log_4.png)
+
+### Test 5
+
+Lift the board to half the length of the cable. Wait and then go up the full length. Wait and go down to half the length of the cable. Go down to the ground. Wait. Lift to the full cable length and lower to the ground three times without stopping nor at the top or the bottom.
+
+![results_5](https://github.com/juangallostra/altitude-estimation-two-step/blob/master/results/log_5.png)
