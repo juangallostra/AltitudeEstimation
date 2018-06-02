@@ -250,7 +250,7 @@ while True:
 		if baro_prev and a_earth_prev:
 			state = np.array([[1, DESIRED_SAMPLING],[0, 1]]).dot(state) + \
 		        	np.array([[1, DESIRED_SAMPLING/2],[0, 1]]).dot(Kc)*DESIRED_SAMPLING*(millibars_to_meters(i_baro_prev, ground_height) - h) + \
-		        	np.array([T/2, 1])*DESIRED_SAMPLING*a_earth_prev
+		        	np.array([DESIRED_SAMPLING/2, 1])*DESIRED_SAMPLING*a_earth_prev
 		h, v = state
 
 		# ZUPT
