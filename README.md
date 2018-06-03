@@ -66,6 +66,8 @@ There are a few parameters that can be tuned to try to achieve higher accuracy. 
 
 ## Results
 
+All distance units are in meters and time units in seconds. This means that acceleration is measured in m/s^2, velocity is measured in m/s and height is measured in m.
+
 ### Test 1
 
 This first results are from a test in which the board was lifted with the hand the whole length of the cable that connects it to the computer while being rotated 90 degress around the y-axis, then lowered to half the length of the cable while recovering its original orientation and finally lowered again to the ground.
