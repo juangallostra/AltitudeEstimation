@@ -3,7 +3,7 @@ A two-step Kalman/Complementary filter for Estimation of Vertical Position using
 
 This work is an implementation of [this paper](http://www.koreascience.or.kr/article/ArticleFullRecord.jsp?cn=HSSHBT_2016_v25n3_202) written in 2016 by Jung Keun Lee. Although the original is in Korean you can find an English version of it [here](https://home.wlu.edu/~levys/TwoStepFilter.pdf) thanks to [Simon D. Levy](http://home.wlu.edu/~levys/). I recommend to have both versions at hand though since there are small typos in some of the equations of the English version.
 
-This Python code is a prototype-implementation of the algorithm focused on its validation. The final goal is to implement it in [Hackflight](https://github.com/simondlevy/Hackflight), a simple C++ multirotor flight control firmware for Arduino and simulators.
+This Python code is a prototype-implementation of the algorithm focused on its validation. The final goal is to implement it in [Hackflight](https://github.com/simondlevy/Hackflight), a simple C++ multirotor flight control firmware for Arduino and simulators. The current status of the implementation can be checked at the [branch](https://github.com/BonaDrone/Hackflight/tree/altitude-hold) `altitude-hold` of BonaDrone's Hackflight fork. 
 
 **Note**: Although the core of the algorithm works, this project is still under development.
 
