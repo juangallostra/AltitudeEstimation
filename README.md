@@ -93,3 +93,4 @@ Lift the board to the maximum length of the cable connecting it to the computer 
 Lift the board to half the length of the cable. Wait and then go up the full length. Wait and go down to half the length of the cable. Go down to the ground. Wait. Lift to the full cable length and lower to the ground three times without stopping nor at the top or the bottom.
 
 ![results_5](https://github.com/juangallostra/altitude-estimation-two-step/blob/master/results/log_5.png)
+
