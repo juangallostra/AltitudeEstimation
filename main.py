@@ -108,7 +108,7 @@ def predict_state(gyro_prev, z, T):
 
 def predict_error_covariance(gyro_prev, z_prev, T, P, sigma_gyro):
 	"""
-	Project the covariance matrix from the data we have 
+	Predict the covariance matrix from the data we have 
 	"""
 	Q = get_prediction_covariance(z_prev, T, sigma_gyro) # Prediction covariance matrix
 	return (np.identity(3) - T*skew(gyro_prev)).dot(P).dot((np.identity(3) - T*skew(gyro_prev)).T) + Q 
