@@ -39,6 +39,8 @@ Once this two things have been done it is time to load the firmware to the board
 
 My current workflow to use this code, which is not as elegant as it could be is:
 
+0. Check the port being used by the board and modify line 30 of `main.py` accordingly. Do the same with the baudrate (line 31) if you plan on using a different one.
+
 1. Capture the terminal printed values into a log file:
 
 		$ python main.py > log.txt
