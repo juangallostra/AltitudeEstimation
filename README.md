@@ -68,7 +68,7 @@ There are a few parameters that can be tuned to try to achieve higher accuracy. 
 
 ## Results
 
-All distance units are in meters and time units in seconds. This means that acceleration is measured in m/s^2, velocity is measured in m/s and height is measured in m.
+Results are in  SI. All distance units are in meters and time units in seconds. This means that acceleration is measured in m/s^2, velocity is measured in m/s and height is measured in m.
 
 ### Test 1
 
