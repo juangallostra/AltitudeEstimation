@@ -23,7 +23,10 @@ The Butterfly board is running [Hackflight](https://github.com/simondlevy/Hackfl
 
 First of all, you will need the [MS5637 Arduino library](https://github.com/BonaDrone/MS5637), originally developed by [Angus Gratton](https://github.com/projectgus), under your `Arduino/libraries` folder. Yo can simply open a terminal inside the directory and clone the repository.
 
-Secondly, you should switch to BonaDrone's `proxy-data` [Hackflight's branch](https://github.com/BonaDrone/Hackflight/tree/proxy-data). This branch contains the code (under development) to read data from the baro and also proxy all the required values for the altitude estimation through the serial. To do so you can add BonaDrone's repo as a new remote and checkout the required branch. 
+Secondly, you should switch to BonaDrone's `proxy-data` [Hackflight's branch](https://github.com/BonaDrone/Hackflight/tree/proxy-data). This branch contains the code (under development) to read data from the baro and also proxy all the required values for the altitude estimation through the serial. To do so you can add BonaDrone's repo as a new remote and checkout the required branch. This can be done by opening a terminal session inside Hackflight's directory and typing:
+
+`$ git remote add bonadrone https://github.com/BonaDrone/Hackflight.git`
+`$ git checkout -b proxy-data bonadrone/proxy-data`
 
 If you are working with different software, this program expects the data received through the serial to be in the format:
 
