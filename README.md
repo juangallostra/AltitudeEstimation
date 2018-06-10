@@ -108,3 +108,15 @@ Lift the board to half the length of the cable. Wait and then go up the full len
 
 ![results_5](https://github.com/juangallostra/altitude-estimation-two-step/blob/master/results/log_5.png)
 
+### Hackflight's test 1
+
+A first and unpolished first version of the algorithm presented in the paper has been implemented in Hakflight. The code can be found at [this branch](https://github.com/BonaDrone/Hackflight/tree/altitude-hold) of BonaDrone's fork. The results of a first test can be observed in the image below, which is a direct screenshot of Arduino's IDE Serial plotter. The color legend is as follows:
+
+* Blue: Estimated vertical acceleration (m/s^2).
+* Red: Estimated vertical velocity (m/s).
+* Green: Estimated altitude from barometer pressure readings (m).
+* Yellow: Two step Kalman/Complementary filter estimated altitude (m).
+
+
+![real_drone_results](https://github.com/juangallostra/altitude-estimation-two-step/blob/master/results/drone_log_1.png)
+
