@@ -1,6 +1,8 @@
 # altitude-estimation-two-step
 A two-step Kalman/Complementary filter for Estimation of Vertical Position using an IMU-Barometer sytem.
 
+![animated](https://github.com/juangallostra/altitude-estimation-two-step/blob/master/results/animated.gif)
+
 This work is an implementation of [this paper](http://www.koreascience.or.kr/article/ArticleFullRecord.jsp?cn=HSSHBT_2016_v25n3_202) written in 2016 by Jung Keun Lee. Although the original is in Korean you can find an English version of it [here](https://home.wlu.edu/~levys/TwoStepFilter.pdf) thanks to [Simon D. Levy](http://home.wlu.edu/~levys/).
 
 This Python code is a prototype-implementation of the algorithm focused on its validation. The final goal is to implement it in [Hackflight](https://github.com/simondlevy/Hackflight), a simple C++ multirotor flight control firmware for Arduino and simulators. The current status of the implementation can be checked at the [branch](https://github.com/BonaDrone/Hackflight/tree/altitude-hold) `altitude-hold` of BonaDrone's Hackflight fork. 
