@@ -3,11 +3,13 @@ A two-step Kalman/Complementary filter for Estimation of Vertical Position using
 
 ![animated](https://github.com/juangallostra/altitude-estimation-two-step/blob/master/results/animated.gif)
 
+**Note**: Although the core of the algorithm works, this project is still under development.
+
 This work is an implementation of [this paper](http://www.koreascience.or.kr/article/ArticleFullRecord.jsp?cn=HSSHBT_2016_v25n3_202) written in 2016 by Jung Keun Lee. Although the original is in Korean you can find an English version of it [here](https://home.wlu.edu/~levys/TwoStepFilter.pdf) thanks to [Simon D. Levy](http://home.wlu.edu/~levys/).
 
-This Python code is a prototype-implementation of the algorithm focused on its validation. The final goal is to implement it in [Hackflight](https://github.com/simondlevy/Hackflight), a simple C++ multirotor flight control firmware for Arduino and simulators. The current status of the implementation can be checked at the [branch](https://github.com/BonaDrone/Hackflight/tree/altitude-hold) `altitude-hold` of BonaDrone's Hackflight fork. 
+This Python code is a prototype-implementation of the algorithm focused on its validation. The final goal is to implement it in [Hackflight](https://github.com/simondlevy/Hackflight), a simple C++ multirotor flight control firmware for Arduino and simulators.
 
-**Note**: Although the core of the algorithm works, this project is still under development.
+**UPDATE**: A first implementation of the algorithm already exists in Hackflight. Its current status of can be checked at the [branch](https://github.com/BonaDrone/Hackflight/tree/altitude-hold) `altitude-hold` of BonaDrone's Hackflight fork. Note that it is still under development.
 
 ## Requirements
 
@@ -110,12 +112,12 @@ Lift the board to half the length of the cable. Wait and then go up the full len
 
 ### Hackflight's test 1
 
-A first and unpolished first version of the algorithm presented in the paper has been implemented in Hakflight. The code can be found at [this branch](https://github.com/BonaDrone/Hackflight/tree/altitude-hold) of BonaDrone's fork. The results of a first test can be observed in the image below, which is a direct screenshot of Arduino's IDE Serial plotter. The color legend is as follows:
+A first and unpolished first version of the algorithm presented in the paper has been implemented in Hakflight. The code can be found at  the [`altitude-hold`](https://github.com/BonaDrone/Hackflight/tree/altitude-hold) branch of BonaDrone's fork. The results of a first test can be observed in the image below, which is a direct screenshot of Arduino's IDE Serial plotter. The color legend is as follows:
 
-* Blue: Estimated vertical acceleration (m/s^2).
-* Red: Estimated vertical velocity (m/s).
-* Green: Estimated altitude from barometer pressure readings (m).
-* Yellow: Two step Kalman/Complementary filter estimated altitude (m).
+* **Blue**: Estimated vertical acceleration (m/s^2).
+* **Red**: Estimated vertical velocity (m/s).
+* **Green**: Estimated altitude from barometer pressure readings (m).
+* **Yellow**: Two step Kalman/Complementary filter estimated altitude (m).
 
 
 ![real_drone_results](https://github.com/juangallostra/altitude-estimation-two-step/blob/master/results/drone_log_1.png)
