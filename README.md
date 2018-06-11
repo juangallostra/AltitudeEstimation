@@ -1,7 +1,7 @@
 # AltitudeEstimation
 A two-step Kalman/Complementary filter for Estimation of Vertical Position using an IMU-Barometer sytem.
 
-**UPDATE**: I'm in the process of transforming this repository into an Arduino library. This readme will be updated accordingly.
+**UPDATE**: I'm in the process of transforming this repository into an Arduino library. This readme will be updated accordingly. In the meantime, the original Python code can be found inside the `extras` folder.
 
 ![animated](https://github.com/juangallostra/AltitudeEstimation/blob/master/extras/results/animated.gif)
 
