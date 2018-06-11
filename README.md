@@ -1,5 +1,7 @@
-# altitude-estimation-two-step
+# AltitudeEstimation
 A two-step Kalman/Complementary filter for Estimation of Vertical Position using an IMU-Barometer sytem.
+
+**UPDATE**: I'm in the process of transforming this repository into an Arduino library. This readme will be updated accordingly.
 
 ![animated](https://github.com/juangallostra/AltitudeEstimation/blob/master/extras/results/animated.gif)
 
@@ -7,9 +9,7 @@ A two-step Kalman/Complementary filter for Estimation of Vertical Position using
 
 This work is an implementation of [this paper](http://www.koreascience.or.kr/article/ArticleFullRecord.jsp?cn=HSSHBT_2016_v25n3_202) written in 2016 by Jung Keun Lee. Although the original is in Korean you can find an English version of it [here](https://home.wlu.edu/~levys/TwoStepFilter.pdf) thanks to [Simon D. Levy](http://home.wlu.edu/~levys/).
 
-This Python code is a prototype-implementation of the algorithm focused on its validation. The final goal is to implement it in [Hackflight](https://github.com/simondlevy/Hackflight), a simple C++ multirotor flight control firmware for Arduino and simulators.
-
-**UPDATE**: A first implementation of the algorithm already exists in Hackflight. Its current status of can be checked at the [branch](https://github.com/BonaDrone/Hackflight/tree/altitude-hold) `altitude-hold` of BonaDrone's Hackflight fork. Note that it is still under development.
+This Python code is a prototype-implementation of the algorithm focused on its validation. The final goal is to implement it in [Hackflight](https://github.com/simondlevy/Hackflight), a simple C++ multirotor flight control firmware for Arduino and simulators. A first implementation of the algorithm already exists in Hackflight. Its current status of can be checked at the [branch](https://github.com/BonaDrone/Hackflight/tree/altitude-hold) `altitude-hold` of BonaDrone's Hackflight fork. Note that it is still under development.
 
 ## Requirements
 
