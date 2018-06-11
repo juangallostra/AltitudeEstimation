@@ -92,7 +92,7 @@ This first results are from a test in which the board was lifted with the hand t
 
 ### Test 2
 
-![results_2](https://github.com/juangallostra/AltitudeEstimation/blob/master/results/log_2.png)
+![results_2](https://github.com/juangallostra/AltitudeEstimation/blob/master/extras/results/log_2.png)
 
 ### Test 3
 
