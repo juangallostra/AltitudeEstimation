@@ -1,7 +1,7 @@
 # altitude-estimation-two-step
 A two-step Kalman/Complementary filter for Estimation of Vertical Position using an IMU-Barometer sytem.
 
-![animated](https://github.com/juangallostra/altitude-estimation-two-step/blob/master/results/animated.gif)
+![animated](https://github.com/juangallostra/AltitudeEstimation/blob/master/results/animated.gif)
 
 **Note**: Although the core of the algorithm works, this project is still under development.
 
@@ -25,7 +25,7 @@ The current setup used for testing consists in the [Butterfly STM32L433 Developm
 
 Yo can see it in the images below:
 
-![Setup](https://github.com/juangallostra/altitude-estimation-two-step/blob/master/images/bottom_top.png)
+![Setup](https://github.com/juangallostra/altitude-estimation-two-step/blob/master/extras/images/bottom_top.png)
 
 ### Software
 
@@ -88,7 +88,7 @@ Results are in  SI. All distance units are in meters and time units in seconds. 
 
 This first results are from a test in which the board was lifted with the hand the whole length of the cable that connects it to the computer while being rotated 90 degress around the y-axis, then lowered to half the length of the cable while recovering its original orientation and finally lowered again to the ground.
 
-![results](https://github.com/juangallostra/altitude-estimation-two-step/blob/master/results/log.png)
+![results](https://github.com/juangallostra/altitude-estimation-two-step/blob/master/extras/results/log.png)
 
 ### Test 2
 
@@ -96,19 +96,19 @@ This first results are from a test in which the board was lifted with the hand t
 
 ### Test 3
 
-![results_3](https://github.com/juangallostra/altitude-estimation-two-step/blob/master/results/log_3.png)
+![results_3](https://github.com/juangallostra/altitude-estimation-two-step/blob/master/extras/results/log_3.png)
 
 ### Test 4
 
 Lift the board to the maximum length of the cable connecting it to the computer and lower it to the ground again 3 times. After that repeat the lift-lower procedure once but this time stopping at an altitude which is roughle the half of the cable before reaching the same altitude as before.
 
-![results_4](https://github.com/juangallostra/altitude-estimation-two-step/blob/master/results/log_4.png)
+![results_4](https://github.com/juangallostra/altitude-estimation-two-step/blob/master/extras/results/log_4.png)
 
 ### Test 5
 
 Lift the board to half the length of the cable. Wait and then go up the full length. Wait and go down to half the length of the cable. Go down to the ground. Wait. Lift to the full cable length and lower to the ground three times without stopping nor at the top or the bottom.
 
-![results_5](https://github.com/juangallostra/altitude-estimation-two-step/blob/master/results/log_5.png)
+![results_5](https://github.com/juangallostra/altitude-estimation-two-step/blob/master/extras/results/log_5.png)
 
 ### Hackflight's test 1
 
@@ -120,5 +120,5 @@ A first and unpolished first version of the algorithm presented in the paper has
 * **Yellow**: Two step Kalman/Complementary filter estimated altitude (m).
 
 
-![real_drone_results](https://github.com/juangallostra/altitude-estimation-two-step/blob/master/results/drone_log_1.png)
+![real_drone_results](https://github.com/juangallostra/altitude-estimation-two-step/blob/master/extras/results/drone_log_1.png)
 
