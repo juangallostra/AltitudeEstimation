@@ -6,10 +6,15 @@
 #include <Arduino.h>
 #include "altitude.hpp"
 
+AltitudeEstimator altitude = new AltitudeEstimator();
+
 void setup(void)
 {
+  
 }
 
 void loop(void)
 {
+  height = altitude.estimate();
+  Serial.println(height);
 }
