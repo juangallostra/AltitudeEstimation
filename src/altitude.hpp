@@ -26,8 +26,8 @@ class AltitudeEstimator {
     // For computing the sampling period
     float previousTime = millis();
     // required filters for altitude and vertical velocity estimation
-    KalmanFilter kalman = KalmanFilter(ca, sigmaGyro, sigmaAccel);
-    ComplementaryFilter complementary = ComplementaryFilter(sigmaAccel, sigmaBaro, accelThreshold);
+    KalmanFilter kalman;
+    ComplementaryFilter complementary;
     // Estimated past vertical acceleration
     float pastVerticalAccel = 0;
     float pastVerticalVelocity = 0;
@@ -42,12 +42,14 @@ class AltitudeEstimator {
 
     AltitudeEstimator(float sigmaAccel, float sigmaGyro, float sigmaBaro,
                            float ca, float accelThreshold)
+    :kalman(ca, sigmaGyro, sigmaAccel), complementary(sigmaAccel, sigmaBaro, accelThreshold)
     {
       this->sigmaAccel = sigmaAccel;
       this->sigmaGyro = sigmaGyro;
       this->sigmaBaro = sigmaBaro;
       this->ca = ca;
       this->accelThreshold = accelThreshold;
+
     }
 
     void estimate(float accel[3], float gyro[3], float baroHeight, float timestamp)
@@ -73,14 +75,20 @@ class AltitudeEstimator {
 
     float getAltitude()
     {
-      // return the last estimated altitude
-      return estimatedAltitude;
+        // return the last estimated altitude
+        return estimatedAltitude;
     }
 
     float getVerticalVelocity()
     {
-      // return the last estimated vertical velocity
-      return estimatedVelocity;
+        // return the last estimated vertical velocity
+        return estimatedVelocity;
+    }
+
+    float getVerticalAcceleration()
+    {
+        // return the last estimated vertical acceleration
+        return pastVerticalAccel;
     }
 
 }; // class AltitudeEstimator
