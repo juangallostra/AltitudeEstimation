@@ -29,9 +29,9 @@ class Barometer {
 
       void init(void)
       {
-          this->groundAltitude = 0;
-          this->pressureSum = 0;
-          this->historyIdx = 0;
+          groundAltitude = 0;
+          pressureSum = 0;
+          historyIdx = 0;
           for (uint8_t k = 0; k < HISTORY_SIZE; ++k) {
               history[k] = 0;
           }
@@ -48,19 +48,19 @@ class Barometer {
       {
           static float groundPressure;
           // Update pressure history
-          history[historyIdx] = this->pressure;
-          this->pressureSum += this->pressure;
+          history[historyIdx] = pressure;
+          pressureSum += pressure;
           // cycle the index throught the history array
           uint8_t nextIndex = (historyIdx + 1) % HISTORY_SIZE;
           // Remove next reading from sum so that pressureSum is kept in sync
-          this->pressureSum -= history[nextIndex];
-          this->historyIdx = nextIndex;
+          pressureSum -= history[nextIndex];
+          historyIdx = nextIndex;
           // groundPressure will stabilize at 8 times the average measured
           // pressure (when groundPressure/8 equals pressureSum/(HISTORY_SIZE-1))
           // This acts as a low pass filter and helps to reduce noise
           groundPressure -= groundPressure / 8;
-          groundPressure += this->pressureSum / (HISTORY_SIZE - 1);
-          this->groundAltitude = millibarsToCentimeters(groundPressure/8);
+          groundPressure += pressureSum / (HISTORY_SIZE - 1);
+          groundAltitude = millibarsToCentimeters(groundPressure/8);
       }
 
       // update the barometer pressure reading
@@ -73,7 +73,7 @@ class Barometer {
       // to the altitude estimated as ground altitude
       float getAltitude(void)
       {
-          return  (millibarsToCentimeters(this->pressure) - this->groundAltitude)/100.0;
+          return  (millibarsToCentimeters(pressure) - groundAltitude)/100.0;
       }
 
 }; // class Barometer
