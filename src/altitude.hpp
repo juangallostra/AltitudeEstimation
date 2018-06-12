@@ -12,21 +12,18 @@
 
 class AltitudeEstimator {
   private:
-    // sensor abstractions
-    Barometer baro = Barometer();
-    IMU imu = IMU();
     // required parameters for the filters used for the estimations
     // sensor's standard deviations
-    float sigmaAccel = 0.2;
-    float sigmaGyro = 0.2;
-    float sigmaBaro = 5;
+    float sigmaAccel;
+    float sigmaGyro;
+    float sigmaBaro;
+    // Acceleration markov chain model state transition constant
+    float ca;
+    // Zero-velocity update acceleration threshold
+    float accelThreshold;
     // gravity
     float g = 9.81;
-    // Acceleration markov chain model state transition constant
-    float ca = 0.5;
-    // Zero-velocity update acceleration threshold
-    float accelThreshold = 0.3;
-    // Sampling period
+    // For computing the sampling period
     float previousTime = millis();
     // required filters for altitude and vertical velocity estimation
     KalmanFilter kalman = KalmanFilter(ca, sigmaGyro, sigmaAccel);
@@ -37,42 +34,23 @@ class AltitudeEstimator {
     float pastAltitude = 0;
     float pastGyro[3] = {0, 0, 0};
     float pastAccel[3] = {0, 0, 0};
-    // fake calibration
-    int count = 0;
-
-  public:
     // estimated altitude and vertical velocity
     float estimatedAltitude = 0;
     float estimatedVelocity = 0;
 
-    void init(void)
+  public:
+
+    AltitudeEstimator(float sigmaAccel, float sigmaGyro, float sigmaBaro,
+                           float ca, float accelThreshold)
     {
-        baro.init();
+      this->sigmaAccel = sigmaAccel;
+      this->sigmaGyro = sigmaGyro;
+      this->sigmaBaro = sigmaBaro;
+      this->ca = ca;
+      this->accelThreshold = accelThreshold;
     }
 
-    void updateBaro(bool armed, float pressure)
-    {
-        baro.update(pressure);
-        // Calibrate barometer when the drone is resting
-        if (!armed && count < 100){
-          baro.calibrate();
-          count++;
-          return;
-        }
-        return;
-    }
-
-    void updateAcceleration(float _accel[3])
-    {
-        imu.updateAcceleration(_accel);
-    }
-
-    void updateGyro(float _gyro[3])
-    {
-        imu.updateGyro(_gyro);
-    }
-
-    float estimate()
+    void estimate(float accel[3], float gyro[3], float height)
     {
         float currentTime = millis();
         float verticalAccel = kalman.estimate(pastGyro,
@@ -80,25 +58,30 @@ class AltitudeEstimator {
                                               (currentTime-previousTime)/1000.0);
         complementary.estimate(& estimatedVelocity,
                                & estimatedAltitude,
-                               baro.getAltitude(),
+                               height,
                                pastAltitude,
                                pastVerticalVelocity,
                                pastVerticalAccel,
                                (currentTime-previousTime)/1000.0);
         // update values for next iteration
-        copyVector(pastGyro, imu.gyro);
-        copyVector(pastAccel, imu.accel);
+        copyVector(pastGyro, gyro);
+        copyVector(pastAccel, accel);
         pastAltitude = estimatedAltitude;
         pastVerticalVelocity = estimatedVelocity;
         pastVerticalAccel = verticalAccel;
         previousTime = currentTime;
-        return estimatedAltitude;
     }
 
     float getAltitude()
     {
       // return the last estimated altitude
-      return pastAltitude;
+      return estimatedAltitude;
+    }
+
+    float getVerticalVelocity()
+    {
+      // return the last estimated vertical velocity
+      return estimatedVelocity;
     }
 
 }; // class AltitudeEstimator
