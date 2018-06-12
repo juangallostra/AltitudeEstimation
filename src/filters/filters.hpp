@@ -197,7 +197,7 @@ class ComplementaryFilter {
         ZUPTIdx = nextIndex;
         // Apply Zero-velocity update
         for (uint8_t k = 0; k < ZUPT_SIZE; ++k) {
-            if (ZUPT[k] > accelThreshold) return vel;
+            if (abs(ZUPT[k]) > accelThreshold) return vel;
         }
         return 0.0;
     }
