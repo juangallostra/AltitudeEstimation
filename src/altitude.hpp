@@ -50,26 +50,25 @@ class AltitudeEstimator {
       this->accelThreshold = accelThreshold;
     }
 
-    void estimate(float accel[3], float gyro[3], float height)
+    void estimate(float accel[3], float gyro[3], float baroHeight, float timestamp)
     {
-        float currentTime = millis();
         float verticalAccel = kalman.estimate(pastGyro,
                                               pastAccel,
-                                              (currentTime-previousTime)/1000.0);
+                                              (timestamp-previousTime)/1000.0);
         complementary.estimate(& estimatedVelocity,
                                & estimatedAltitude,
-                               height,
+                               baroHeight,
                                pastAltitude,
                                pastVerticalVelocity,
                                pastVerticalAccel,
-                               (currentTime-previousTime)/1000.0);
+                               (timestamp-previousTime)/1000.0);
         // update values for next iteration
         copyVector(pastGyro, gyro);
         copyVector(pastAccel, accel);
         pastAltitude = estimatedAltitude;
         pastVerticalVelocity = estimatedVelocity;
         pastVerticalAccel = verticalAccel;
-        previousTime = currentTime;
+        previousTime = timestamp;
     }
 
     float getAltitude()
