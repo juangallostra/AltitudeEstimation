@@ -190,5 +190,11 @@ void loop(void)
   float gyroData[3];
   getGyrometerAndAccelerometer(gyroData, accelData);
   altitude.estimate(accelData, gyroData, baroHeight, timestamp);
-  Serial.println(altitude.getAltitude());
+  Serial.print(baroHeight);
+  Serial.print(",");
+  Serial.print(altitude.getAltitude());
+  Serial.print(",");
+  Serial.print(altitude.getVerticalVelocity());
+  Serial.print(",");
+  Serial.println(altitude.getVerticalAcceleration());
 }
