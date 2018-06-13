@@ -25,7 +25,7 @@ The current setup used for testing consists in the [Butterfly STM32L433 Developm
 
 Yo can see it in the images below:
 
-![Setup](https://github.com/juangallostra/AltitudeEstimation/blob/master/extras/images/bottom_top.png)
+![Setup](https://drive.google.com/drive/folders/1SNAIRl3wuIKSjvmE4HJWtTPIgJ5PST1U)
 
 ### Software
 
