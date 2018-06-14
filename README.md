@@ -3,7 +3,7 @@ A two-step Kalman/Complementary filter for Estimation of Vertical Position using
 
 **UPDATE**: I'm in the process of transforming this repository into an Arduino library. This readme will be updated accordingly. In the meantime, the original Python code can be found inside the `extras` folder.
 
-![animated](https://i.imgur.com/BzdiAou.gifv)
+![animated](https://i.imgur.com/BzdiAou.gif)
 
 **Note**: Although the core of the algorithm works, this project is still under development.
 
