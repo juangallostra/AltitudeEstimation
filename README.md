@@ -145,13 +145,13 @@ Legend:
 
 Setup at rest the whole time.
 
-[test_1](https://i.imgur.com/peAQHkP.png)
+![test_1](https://i.imgur.com/peAQHkP.png)
 
 ## Test 2
 
 Lift to full cable length, hold, and lower it back to the initial position.
 
-[test_2](https://i.imgur.com/dG4Hc73.png)
+![test_2](https://i.imgur.com/dG4Hc73.png)
 
 
 ## Extras
