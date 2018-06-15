@@ -5,8 +5,6 @@
 # pragma once
 
 #include "datatypes.hpp"
-#include "sensors/barometer.hpp"
-#include "sensors/imu.hpp"
 #include "filters/filters.hpp"
 #include "algebra/algebra.hpp"
 
