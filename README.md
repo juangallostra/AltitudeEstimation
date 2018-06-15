@@ -1,9 +1,10 @@
 # AltitudeEstimation
-An arduino library to perform vertical position estimation using an IMU-Barometer system via a two-step Kalman/Complementary filter.
+A C++ arduino library to perform vertical position estimation using an IMU-Barometer system via a two-step Kalman/Complementary filter.
 
 This work is an implementation of the algorithm explained in [this paper](http://www.koreascience.or.kr/article/ArticleFullRecord.jsp?cn=HSSHBT_2016_v25n3_202) written in 2016 by Jung Keun Lee. Although the original is in Korean you can find an English version of it [here](https://home.wlu.edu/~levys/TwoStepFilter.pdf) thanks to [Simon D. Levy](http://home.wlu.edu/~levys/).
 
 **Note**: This readme is not yet complete since this repo has been updated from a Python implementation of the algorithm to an Arduino library. While it is not finished, [here](https://github.com/juangallostra/AltitudeEstimation/blob/master/README_old.md) you can find the old readme. 
+
 
 ## Setup
 
@@ -16,6 +17,45 @@ Yo can see it in the images below:
 ![Setup](https://i.imgur.com/XqFxrWS.png)
 
 ## Usage
+
+This library is extremely easy to use. Clone this respository in your `Arduino/libraries` folder by opening a terminal session there and typing:
+
+`git clone https://github.com/juangallostra/AltitudeEstimation.git`
+
+Clonning the library in your `Arduino/libraries` folder is the only step that has to be performed before getting into the actual coding. To be able to use the library in your code add the following line at the beginning of your file:
+
+```cpp
+#include "altitude.hpp"
+```
+
+We are ready now to instantiate the estimator where needed. This can be done by:
+
+```cpp
+// Altitude estimator
+AltitudeEstimator altitude = AltitudeEstimator(0.2, // sigma Accel
+                                               0.2, // sigma Gyro
+                                               5,   // sigma Baro
+                                               0.5, // ca
+                                               0.3);// accelThreshold
+```
+
+Note that here we are specifying the value of the parameters that will be used to perform the estimations. These can be tuned to achieve higher accuracy. A more in-detail description of the parameters is provided below.
+
+Once we have our estimator the only thing we have to do to estimate the current vertical position, velocity and acceleration is to call its `estimate` method. Since one of the aims of this library is to be hardware-independent, this method expects to receive the latest acceleremoter, gyrometer and barometer readings as well as the timestamp they were obtained as parameters. Jump to the **Available methods** section if you wish to know more about these parameters and their expected values.
+
+```cpp
+altitude.estimate(accelData, gyroData, baroHeight, timestamp);
+```
+
+The call to the previous method will not return anything. Instead, it will perform the estimation and store the results. To access the results of the latest estimation you just have to call the following methods:
+
+```cpp
+altitude.getAltitude()	// get estimated altitude in meters
+altitude.getVerticalVelocity() // get estimated vertical velocity in meters per second
+altitude.getVerticalAcceleration() // get estimated vertical acceleration in m/s^2
+```
+
+A fully working example 
 
 
 ### Available methods
@@ -32,6 +72,19 @@ Method signature:
 void estimate(float accel[3], float gyro[3], float baroHeight, float timestamp)
 ```
 
+Parameters:
+
+* `float accel[3]`: length 3 array of floats with acceleration readings in g-s. The order in which the estimator expects the readings is `ax`, `ay` and `az`.
+
+* `float gyro[3]`: length 3 array of floats with gyrometer readings in rad/s. The order in which the estimator expects the readings is `gx`, `gy` and `gz`.
+
+* `float baroHeight`: vertical height in meters as estimated from the barometer signal. The conversion from pressure to height can be easily achieved with a small helper function. [This](https://www.weather.gov/media/epz/wxcalc/pressureAltitude.pdf) is the formula I used in the provided example to achieve so (see lines 29-33). Since the algorithm requires the altitude estimated from the baro and not the pressure reading itself I prefer to let the user choose freely how he wants to map pressure to altitude.
+
+* `float timestamp`: The timestamp at which the readings were obtained. Currently the library expects it to be in milliseconds.
+
+A fully working example can be found at `AltitudeEstimation.ino` under `examples/AltitudeEstimation`. The provided code assumes that the hardware used is an MPU9250 IMU and a MS5637 barometer. Arduino libraries for both them are available [here](https://github.com/simondlevy/MPU9250) (MPU9250) and [here](https://github.com/BonaDrone/MS5637) (MS5637).
+
+
 ### getAltitude
 
 This method can be called to obtain the latest vertical position estimation. The estimated altitude is measured in meters.
@@ -43,6 +96,7 @@ float getAltitude()
 
 ```
 
+
 ### getVerticalVelocity
 
 This method can be called to obtain the latest vertical velocity estimation. The estimated velocity is measured in meters per second.
@@ -53,6 +107,7 @@ Method signature:
 float getVerticalVelocity()
 ```
 
+
 ### getVerticalAcceleration
 
 This method can be called to obtain the latest vertical acceleration estimation. The estimated vertical acceleration is measured in meters per second^2.
@@ -62,6 +117,7 @@ Method signature:
 ```cpp
 float getVerticalAcceleration()
 ```
+
 
 ## Parameter tunning
 
