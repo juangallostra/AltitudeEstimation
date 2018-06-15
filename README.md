@@ -135,5 +135,23 @@ AltitudeEstimator(float sigmaAccel, float sigmaGyro, float sigmaBaro, float ca, 
 
 ## Results
 
+Legend:
+* **Yellow**: Estimated vertical acceleration (m/s^2).
+* **Green**: Estimated vertical velocity (m/s).
+* **Blue**: Estimated altitude from barometer pressure readings (m).
+* **Red**: Two step Kalman/Complementary filter estimated altitude (m).
+
+## Test 1
+
+Setup at rest the whole time.
+
+[test_1](https://i.imgur.com/peAQHkP.png)
+
+## Test 2
+
+Lift to full cable length, hold, and lower it back to the initial position.
+
+[test_2](https://i.imgur.com/dG4Hc73.png)
+
 
 ## Extras
