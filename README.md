@@ -55,7 +55,7 @@ altitude.getVerticalVelocity() // get estimated vertical velocity in meters per 
 altitude.getVerticalAcceleration() // get estimated vertical acceleration in m/s^2
 ```
 
-A fully working example 
+A fully working example can be found at `AltitudeEstimation.ino` under `examples/AltitudeEstimation`. The provided code assumes that the hardware used is an MPU9250 IMU and a MS5637 barometer. Arduino libraries for both them are available [here](https://github.com/simondlevy/MPU9250) (MPU9250) and [here](https://github.com/BonaDrone/MS5637) (MS5637).
 
 
 ### Available methods
@@ -81,8 +81,6 @@ Parameters:
 * `float baroHeight`: vertical height in meters as estimated from the barometer signal. The conversion from pressure to height can be easily achieved with a small helper function. [This](https://www.weather.gov/media/epz/wxcalc/pressureAltitude.pdf) is the formula I used in the provided example to achieve so (see lines 29-33). Since the algorithm requires the altitude estimated from the baro and not the pressure reading itself I prefer to let the user choose freely how he wants to map pressure to altitude.
 
 * `float timestamp`: The timestamp at which the readings were obtained. Currently the library expects it to be in milliseconds.
-
-A fully working example can be found at `AltitudeEstimation.ino` under `examples/AltitudeEstimation`. The provided code assumes that the hardware used is an MPU9250 IMU and a MS5637 barometer. Arduino libraries for both them are available [here](https://github.com/simondlevy/MPU9250) (MPU9250) and [here](https://github.com/BonaDrone/MS5637) (MS5637).
 
 
 ### getAltitude
