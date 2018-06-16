@@ -16,11 +16,12 @@ Yo can see it in the images below:
 
 ## Usage
 
-This library is extremely easy to use. Clone this respository in your `Arduino/libraries` folder by opening a terminal session there and typing:
+This library is extremely easy to use. Go to the [releases](https://github.com/juangallostra/AltitudeEstimation/releases) page of the library and download the latest release. Once downloaded, uncompress it in your `Arduino/libraries` folder. Alternatively, clone this respository in your `Arduino/libraries` folder by opening a terminal session there and typing:
 
 `git clone https://github.com/juangallostra/AltitudeEstimation.git`
 
-Clonning the library in your `Arduino/libraries` folder is the only step that has to be performed before getting into the actual coding. To be able to use the library in your code add the following line at the beginning of your file:
+
+Clonning/Downloading the library in your `Arduino/libraries` folder is the only step that has to be performed before getting into the actual coding. To be able to use the library in your code add the following line at the beginning of your file:
 
 ```cpp
 #include "altitude.hpp"
