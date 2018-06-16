@@ -3,8 +3,6 @@ A C++ arduino library to perform vertical position estimation using an IMU-Barom
 
 This work is an implementation of the algorithm explained in [this paper](http://www.koreascience.or.kr/article/ArticleFullRecord.jsp?cn=HSSHBT_2016_v25n3_202) written in 2016 by Jung Keun Lee. Although the original is in Korean you can find an English version of it [here](https://home.wlu.edu/~levys/TwoStepFilter.pdf) thanks to [Simon D. Levy](http://home.wlu.edu/~levys/).
 
-**Note**: This readme is not yet complete since this repo has been updated from a Python implementation of the algorithm to an Arduino library. While it is not finished, [here](https://github.com/juangallostra/AltitudeEstimation/blob/master/README_old.md) you can find the old readme. 
-
 
 ## Setup
 
@@ -155,3 +153,5 @@ Lift to full cable length, hold, and lower it back to the initial position.
 
 
 ## Extras
+
+There is a Python implementation of the algorithm under the folder `extras`. You can read about it [here](https://github.com/juangallostra/AltitudeEstimation/blob/master/extras/README.md).  
