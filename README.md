@@ -54,7 +54,7 @@ altitude.getVerticalVelocity() // get estimated vertical velocity in meters per 
 altitude.getVerticalAcceleration() // get estimated vertical acceleration in m/s^2
 ```
 
-A fully working example can be found at `AltitudeEstimation.ino` under `examples/AltitudeEstimation`. The provided code assumes that the hardware used is an MPU9250 IMU and a MS5637 barometer. Arduino libraries for both them are available [here](https://github.com/simondlevy/MPU9250) (MPU9250) and [here](https://github.com/BonaDrone/MS5637) (MS5637).
+A fully working [example](https://github.com/juangallostra/AltitudeEstimation/blob/master/examples/AltitudeEstimation/AltitudeEstimation.ino) can be found at `AltitudeEstimation.ino` under `examples/AltitudeEstimation`. The provided code assumes that the hardware used is an MPU9250 IMU and a MS5637 barometer. Arduino libraries for both them are available [here](https://github.com/simondlevy/MPU9250) (MPU9250) and [here](https://github.com/BonaDrone/MS5637) (MS5637).
 
 
 ### Available methods
