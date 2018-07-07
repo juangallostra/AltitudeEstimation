@@ -22,7 +22,7 @@ class AltitudeEstimator {
     // gravity
     float g = 9.81;
     // For computing the sampling period
-    float previousTime = millis();
+    uint32_t previousTime = micros();
     // required filters for altitude and vertical velocity estimation
     KalmanFilter kalman;
     ComplementaryFilter complementary;
@@ -50,18 +50,18 @@ class AltitudeEstimator {
 
     }
 
-    void estimate(float accel[3], float gyro[3], float baroHeight, float timestamp)
+    void estimate(float accel[3], float gyro[3], float baroHeight, uint32_t timestamp)
     {
         float verticalAccel = kalman.estimate(pastGyro,
                                               pastAccel,
-                                              (timestamp-previousTime)/1000.0);
+                                              (timestamp-previousTime)/1000000.0);
         complementary.estimate(& estimatedVelocity,
                                & estimatedAltitude,
                                baroHeight,
                                pastAltitude,
                                pastVerticalVelocity,
                                pastVerticalAccel,
-                               (timestamp-previousTime)/1000.0);
+                               (timestamp-previousTime)/1000000.0);
         // update values for next iteration
         copyVector(pastGyro, gyro);
         copyVector(pastAccel, accel);
