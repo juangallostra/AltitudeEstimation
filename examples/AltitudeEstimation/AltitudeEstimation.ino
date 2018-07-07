@@ -20,7 +20,7 @@ float   groundPressure = 0;
 float   pressureSum = 0;
 float   history[HISTORY_SIZE];
 uint8_t historyIdx = 0;
-int     endCalibration = 150;
+int     endCalibration = 70;
 
 MS5637 barometer = MS5637();
 
@@ -185,7 +185,7 @@ void loop(void)
   float pressure;
   barometer.getPressure(& pressure);
   float baroHeight = getAltitude(pressure);
-  uint32_t timestamp = micros();
+  float timestamp = millis();
   float accelData[3];
   float gyroData[3];
   getGyrometerAndAccelerometer(gyroData, accelData);
