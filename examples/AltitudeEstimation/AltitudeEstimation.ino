@@ -137,7 +137,7 @@ AltitudeEstimator altitude = AltitudeEstimator(0.0005, // sigma Accel
                                                0.0005, // sigma Gyro
                                                0.018,   // sigma Baro
                                                0.5, // ca
-                                               0.3);// accelThreshold
+                                               0.1);// accelThreshold
 
 void setup(void)
 {
