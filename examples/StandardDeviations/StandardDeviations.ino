@@ -49,8 +49,8 @@ float getBarometerSigma(int numberOfIterations)
 // Arduino setup and loop functions
 void setup(void)
 {
-  // Begin serial comms
-  Serial.begin(115200);
+    // Begin serial comms
+    Serial.begin(115200);
 }
 
 void loop(void)
