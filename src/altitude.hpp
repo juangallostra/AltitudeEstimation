@@ -52,16 +52,17 @@ class AltitudeEstimator {
 
     void estimate(float accel[3], float gyro[3], float baroHeight, uint32_t timestamp)
     {
+        float deltat = (float)(timestamp-previousTime)/1000000.0f;
         float verticalAccel = kalman.estimate(pastGyro,
                                               pastAccel,
-                                              (timestamp-previousTime)/1000000.0);
+                                              deltat);
         complementary.estimate(& estimatedVelocity,
                                & estimatedAltitude,
                                baroHeight,
                                pastAltitude,
                                pastVerticalVelocity,
                                pastVerticalAccel,
-                               (timestamp-previousTime)/1000000.0);
+                               deltat);
         // update values for next iteration
         copyVector(pastGyro, gyro);
         copyVector(pastAccel, accel);

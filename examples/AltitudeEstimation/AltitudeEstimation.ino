@@ -185,7 +185,7 @@ void loop(void)
   float pressure;
   barometer.getPressure(& pressure);
   float baroHeight = getAltitude(pressure);
-  float timestamp = millis();
+  uint32_t timestamp = micros();
   float accelData[3];
   float gyroData[3];
   getGyrometerAndAccelerometer(gyroData, accelData);
