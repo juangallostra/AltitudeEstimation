@@ -61,14 +61,14 @@ A fully working [example](https://github.com/juangallostra/AltitudeEstimation/bl
 
 ### estimate
 
-Each time this method is called the estimation of the vertical position, velocity and acceleration will be updated. To update the estimation you must provide the latest available readings from the accelerometer (in g-s), the gyrometer (in rad/s) and the baro (in meters) as well as the timestamp in which the readings were obtained. Currently the library assumes the timestamp is measured in milliseconds.
+Each time this method is called the estimation of the vertical position, velocity and acceleration will be updated. To update the estimation you must provide the latest available readings from the accelerometer (in g-s), the gyrometer (in rad/s) and the baro (in meters) as well as the timestamp in which the readings were obtained. Currently the library assumes the timestamp is measured in microseconds.
 
 Calling this method will update the estimations and store the results internally but it will not return anything. There are specific methods provided to get the estimated values. 
 
 Method signature:
 
 ```cpp
-void estimate(float accel[3], float gyro[3], float baroHeight, float timestamp)
+void estimate(float accel[3], float gyro[3], float baroHeight, uint32_t timestamp)
 ```
 
 Parameters:
@@ -79,7 +79,7 @@ Parameters:
 
 * `float baroHeight`: vertical height in meters as estimated from the barometer signal. The conversion from pressure to height can be easily achieved with a small helper function. [This](https://www.weather.gov/media/epz/wxcalc/pressureAltitude.pdf) is the formula I used in the provided example to achieve so (see lines 29-33). Since the algorithm requires the altitude estimated from the baro and not the pressure reading itself I prefer to let the user choose freely how he wants to map pressure to altitude.
 
-* `float timestamp`: The timestamp at which the readings were obtained. Currently the library expects it to be in milliseconds.
+* `uint32_t timestamp`: The timestamp at which the readings were obtained. Currently the library expects it to be in microseconds.
 
 
 ### getAltitude
