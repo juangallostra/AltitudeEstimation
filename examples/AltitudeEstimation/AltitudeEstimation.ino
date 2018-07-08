@@ -133,9 +133,9 @@ void getGyrometerAndAccelerometer(float gyro[3], float accel[3])
 }
 
 // Altitude estimator
-AltitudeEstimator altitude = AltitudeEstimator(0.2, // sigma Accel
-                                               0.2, // sigma Gyro
-                                               5,   // sigma Baro
+AltitudeEstimator altitude = AltitudeEstimator(0.0005, // sigma Accel
+                                               0.0005, // sigma Gyro
+                                               0.018,   // sigma Baro
                                                0.5, // ca
                                                0.3);// accelThreshold
 
