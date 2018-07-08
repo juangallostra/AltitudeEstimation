@@ -20,7 +20,7 @@ float   groundPressure = 0;
 float   pressureSum = 0;
 float   history[HISTORY_SIZE];
 uint8_t historyIdx = 0;
-int     endCalibration = 70;
+int     endCalibration = 120;
 
 MS5637 barometer = MS5637();
 
