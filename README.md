@@ -31,11 +31,11 @@ We are ready now to instantiate the estimator where needed. This can be done by:
 
 ```cpp
 // Altitude estimator
-AltitudeEstimator altitude = AltitudeEstimator(0.2, // sigma Accel
-                                               0.2, // sigma Gyro
-                                               5,   // sigma Baro
-                                               0.5, // ca
-                                               0.3);// accelThreshold
+AltitudeEstimator altitude = AltitudeEstimator(0.0005, 	// sigma Accel
+                                               0.0005, 	// sigma Gyro
+                                               0.018,   // sigma Baro
+                                               0.5, 	// ca
+                                               0.1);	// accelThreshold
 ```
 
 Note that here we are specifying the value of the parameters that will be used to perform the estimations. These can be tuned to achieve higher accuracy. A more in-detail description of the parameters is provided below.
