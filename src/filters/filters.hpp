@@ -42,7 +42,6 @@ class KalmanFilter {
         float sigma[3][3];
         float identity[3][3];
         identityMatrix3x3(identity);
-        float tmp[3][3];
         float norm;
         // Compute measurement covariance
         scaleMatrix3x3(sigma, pow(sigmaAccel, 2), identity);
@@ -58,7 +57,6 @@ class KalmanFilter {
         identityMatrix3x3(identity);
         float skewFromGyro[3][3];
         skew(skewFromGyro, gyro);
-        float tmp[3][3];
         // Predict state
         scaleAndAccumulateMatrix3x3(identity, -deltat, skewFromGyro);
         matrixDotVector3x3(predictedState, identity, currentState);
