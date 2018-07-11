@@ -1,6 +1,6 @@
 /*
-   AltitudeEstimation.ino : Arduino sketch to perform altitude estimation using
-   the provided library
+   SENtralAltitudeEstimation.ino : Arduino sketch to perform altitude estimation using
+   the EM7180 SENtral Sensor Fusion Solution.
  */
 
 #include <Arduino.h>
