@@ -10,7 +10,7 @@
 #include <MPU9250.h>
 #include <MS5637.h>
 
-#include "altitude.hpp"
+#include "altitude.h"
 
 // helper variables and functions for obtaining baro data
 static const uint8_t HISTORY_SIZE = 48;
@@ -141,24 +141,6 @@ static AltitudeEstimator altitude = AltitudeEstimator(0.0005, // sigma Accel
 
 void setup(void)
 {
-    // Set all pressure history entries to 0
-    for (uint8_t k = 0; k < HISTORY_SIZE; ++k) {
-        history[k] = 0;
-    }
-    // begin Barometer
-    barometer.begin();
-    // calibrate barometer
-    for (uint8_t k=0; k <= endCalibration; k++) {
-        float readPressure;
-        barometer.getPressure(& readPressure);
-        calibrate(readPressure);
-    }
-    // Begin serial comms
-    Serial.begin(115200);
-    // Set up the interrupt pin, it's set as active high, push-pull
-    pinMode(INTERRUPT_PIN, INPUT);
-    attachInterrupt(INTERRUPT_PIN, interruptHandler, RISING);
-
     // Start I^2C
     Wire.begin();
     Wire.setClock(400000); // I2C frequency at 400 kHz
@@ -177,6 +159,25 @@ void setup(void)
 
     // Initialize the MPU9250
     imu.initMPU9250(ASCALE, GSCALE, SAMPLE_RATE_DIVISOR);
+    // Set all pressure history entries to 0
+    for (uint8_t k = 0; k < HISTORY_SIZE; ++k) {
+        history[k] = 0;
+    }
+    // begin Barometer
+    barometer.begin();
+
+    // calibrate barometer
+    for (uint8_t k=0; k <= endCalibration; k++) {
+        float readPressure;
+        barometer.getPressure(& readPressure);
+        calibrate(readPressure);
+    }
+    // Begin serial comms
+    Serial.begin(115200);
+    // Set up the interrupt pin, it's set as active high, push-pull
+    pinMode(INTERRUPT_PIN, INPUT);
+    attachInterrupt(INTERRUPT_PIN, interruptHandler, RISING);
+
 }
 
 void loop(void)
@@ -184,6 +185,7 @@ void loop(void)
     // get all necessary data
     float pressure;
     barometer.getPressure(& pressure);
+    Serial.println(pressure);
     float baroHeight = getAltitude(pressure);
     uint32_t timestamp = micros();
     float accelData[3];

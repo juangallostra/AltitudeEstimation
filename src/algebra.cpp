@@ -14,55 +14,56 @@
   Adapted for altitude estimation tasks by Juan Gallostra June 2018
 */
 
-#pragma once
-
 #include <cmath>
+#include <stdio.h>
+
+#include "algebra.h"
 
 // Copy 3D vector
 void copyVector(float b[3],float a[3])
 {
-   (b)[0] = (a)[0];
-   (b)[1] = (a)[1];
-   (b)[2] = (a)[2];
+   b[0] = a[0];
+   b[1] = a[1];
+   b[2] = a[2];
 }
 
 
 // Vector difference
 void subtractVectors(float v21[3], float v2[3], float v1[3])
 {
-   (v21)[0] = (v2)[0] - (v1)[0];
-   (v21)[1] = (v2)[1] - (v1)[1];
-   (v21)[2] = (v2)[2] - (v1)[2];
+   v21[0] = v2[0] - v1[0];
+   v21[1] = v2[1] - v1[1];
+   v21[2] = v2[2] - v1[2];
 }
 
 // Vector sum
 void sumVectors(float v21[3], float v2[3], float v1[3])
 {
-   (v21)[0] = (v2)[0] + (v1)[0];
-   (v21)[1] = (v2)[1] + (v1)[1];
-   (v21)[2] = (v2)[2] + (v1)[2];
+   v21[0] = v2[0] + v1[0];
+   v21[1] = v2[1] + v1[1];
+   v21[2] = v2[2] + v1[2];
 }
 
 // scalar times vector
 void scaleVector(float c[3],float a, float b[3])
 {
-   (c)[0] = (a)*(b)[0];
-   (c)[1] = (a)*(b)[1];
-   (c)[2] = (a)*(b)[2];
+   (c)[0] = a*b[0];
+   (c)[1] = a*b[1];
+   (c)[2] = a*b[2];
 }
 
 // accumulate scaled vector
 void accumulateScaledVector(float c[3], float a, float b[3])
 {
-   (c)[0] += (a)*(b)[0];
-   (c)[1] += (a)*(b)[1];
-   (c)[2] += (a)*(b)[2];
+   (c)[0] += a*b[0];
+   (c)[1] += a*b[1];
+   (c)[2] += a*b[2];
 }
 
 // Vector dot product
 void dotProductVectors(float * c, float a[3], float b[3])
 {
-   *c = (a)[0]*(b)[0] + (a)[1]*(b)[1] + (a)[2]*(b)[2];
+   *c = a[0]*b[0] + a[1]*b[1] + a[2]*b[2];
 }
 
 // Vector length
@@ -89,9 +90,9 @@ void normalizeVector(float a[3])
 // 3D Vector cross product yeilding vector
 void crossProductVectors(float c[3], float a[3], float b[3])
 {
-   c[0] = (a)[1] * (b)[2] - (a)[2] * (b)[1];
-   c[1] = (a)[2] * (b)[0] - (a)[0] * (b)[2];
-   c[2] = (a)[0] * (b)[1] - (a)[1] * (b)[0];
+   c[0] = a[1] * b[2] - a[2] * b[1];
+   c[1] = a[2] * b[0] - a[0] * b[2];
+   c[2] = a[0] * b[1] - a[1] * b[0];
 }
 
 // initialize matrix
@@ -287,5 +288,5 @@ void vecPrint(float a[3])
 {
    float len;
    vectorLength(& len, a);
-   printf(" a is %f %f %f length of a is %f \n", (a)[0], (a)[1], (a)[2], len);
+   printf(" a is %f %f %f length of a is %f \n", a[0], a[1], a[2], len);
 }

@@ -8,7 +8,7 @@
 
 #include <EM7180.h> 
 
-#include "altitude.hpp"
+#include "altitude.h"
 
 // helper variables and functions for obtaining baro data
 static const uint8_t HISTORY_SIZE = 48;
@@ -86,7 +86,6 @@ void setup(void)
     for (uint8_t k = 0; k < HISTORY_SIZE; ++k) {
         history[k] = 0;
     }
-    // begin Barometer
 
     // calibrate barometer
     for (uint8_t k=0; k <= endCalibration; k++) {
@@ -122,8 +121,18 @@ void setup(void)
 
 void loop(void)
 {
-    // get all necessary data
+    sentral.checkEventStatus();
+
     static float pressure;
+
+    if (sentral.gotBarometer()) {
+        float temperature; // ignored
+        sentral.readBarometer(pressure, temperature);
+
+        Serial.println(pressure);
+    }
+
+    // get all necessary data
     float baroHeight = getAltitude(pressure);
 
     uint32_t timestamp = micros();
@@ -134,6 +143,7 @@ void loop(void)
 
     altitude.estimate(accelData, gyroData, baroHeight, timestamp);
 
+    /*
     Serial.print(baroHeight);
     Serial.print(",");
     Serial.print(altitude.getAltitude());
@@ -141,4 +151,5 @@ void loop(void)
     Serial.print(altitude.getVerticalVelocity());
     Serial.print(",");
     Serial.println(altitude.getVerticalAcceleration());
+    */
 }

@@ -2,11 +2,10 @@
     altitude.hpp: Altitude estimation via barometer/accelerometer fusion
 */
 
-# pragma once
+#include "filters.h"
+#include "algebra.h"
 
-#include "datatypes.hpp"
-#include "filters/filters.hpp"
-#include "algebra/algebra.hpp"
+#include <Arduino.h> // XXX For micros; eventually need to compute micros() elsewhere
 
 class AltitudeEstimator {
   private:
