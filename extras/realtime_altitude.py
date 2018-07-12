@@ -12,6 +12,7 @@ import serial
 from realtime_plot import RealtimePlotter
 import numpy as np
 from threading import Thread
+from sys import argv
 
 # Change these to suit your needs
 PORT = '/dev/ttyACM0'
@@ -54,8 +55,10 @@ def _update(port, plotter):
 
 if __name__ == '__main__':
 
+    port = argv[1] if len(argv) > 1 else PORT
+
     try:
-        port = serial.Serial(PORT, BAUD)
+        port = serial.Serial(port, BAUD)
     except serial.SerialException:
         print('Unable to open device on port %s' % PORT)
         exit(1)
