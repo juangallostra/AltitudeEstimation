@@ -18,7 +18,7 @@ static float   groundPressure = 0;
 static float   pressureSum = 0;
 static float   history[HISTORY_SIZE];
 static uint8_t historyIdx = 0;
-static int     endCalibration = 120;
+static uint32_t endCalibration = 120;
 
 static const uint8_t  ARES           = 8;    // Gs
 static const uint16_t GRES           = 2000; // degrees per second
@@ -31,7 +31,7 @@ static const uint8_t  Q_RATE_DIVISOR = 5;    // 1/5 gyro rate
 
 static EM7180_Master sentral = EM7180_Master(ARES, GRES, MRES, MAG_RATE, ACCEL_RATE, GYRO_RATE, BARO_RATE, Q_RATE_DIVISOR);
 
-static float gyroAdcToRadians;
+static float gyroAdcToDegrees;
 
 // Pressure in millibars to altitude in meters. We assume
 // millibars are the units of the pressure readings from the sensor
@@ -82,40 +82,47 @@ static AltitudeEstimator altitude = AltitudeEstimator(0.0005, // sigma Accel
 
 void setup(void)
 {
+    // Begin serial comms
+    Serial.begin(115200);
+
     // Set all pressure history entries to 0
     for (uint8_t k = 0; k < HISTORY_SIZE; ++k) {
         history[k] = 0;
     }
 
-    // calibrate barometer
-    for (uint8_t k=0; k <= endCalibration; k++) {
-        static float pressure;
-        //barometer.getPressure(& pressure);
-        calibrate(pressure);
-    }
-    // Begin serial comms
-    Serial.begin(115200);
-
-    // Set up the interrupt pin, it's set as active high, push-pull
-    //pinMode(INTERRUPT_PIN, INPUT);
-    //attachInterrupt(INTERRUPT_PIN, interruptHandler, RISING);
-
     // Start I^2C
     Wire.begin();
-    Wire.setClock(400000); // I2C frequency at 400 kHz
     delay(1000);
 
-    // Start the EM7180 in master mode, no interrupt
+    // Start the EM7180 in master mode
     if (!sentral.begin()) {
         while (true) {
             Serial.println(sentral.getErrorString());
         }
     }
 
-    // Get actual gyro rate for conversion to radians
+   // Get actual gyro rate for conversion to radians
     uint8_t accFs=0; uint16_t gyroFs=0; uint16_t magFs=0;
     sentral.getFullScaleRanges(accFs, gyroFs, magFs);
-    gyroAdcToRadians = M_PI * (float)gyroFs / (1<<15) / 180.;  
+    gyroAdcToDegrees =(float)gyroFs / (1<<15);  
+
+     // calibrate barometer
+    uint32_t count = 0;
+    while (count < endCalibration) {
+        sentral.checkEventStatus();
+        if (sentral.gotBarometer()) {
+            float pressure;
+            float temperature; // ignored
+            sentral.readBarometer(pressure, temperature);
+            calibrate(pressure);
+            count++;
+        }
+    }
+
+    // Set up the interrupt pin, it's set as active high, push-pull
+    //pinMode(INTERRUPT_PIN, INPUT);
+    //attachInterrupt(INTERRUPT_PIN, interruptHandler, RISING);
+
 
 }
 
@@ -123,27 +130,46 @@ void loop(void)
 {
     sentral.checkEventStatus();
 
+    // Check barometer
     static float pressure;
-
     if (sentral.gotBarometer()) {
         float temperature; // ignored
         sentral.readBarometer(pressure, temperature);
-
-        Serial.println(pressure);
     }
 
-    // get all necessary data
+    // Check gyrometer
+    static float gyroData[3];
+    if (sentral.gotGyrometer()) {
+
+        int16_t gx, gy, gz;
+
+        sentral.readGyrometer(gx, gy, gz);
+
+        // invert pitch, yaw gyro direction to keep other code simpler
+        gy = -gy;
+        gz = -gz;
+
+        gyroData[0] = gx * gyroAdcToDegrees;
+        gyroData[1] = gy * gyroAdcToDegrees;
+        gyroData[2] = gz * gyroAdcToDegrees;
+    }
+
+    // Check accelerometer
+    static float accelData[3];
+    if (sentral.gotAccelerometer()) {
+        int16_t ax, ay, az;
+        sentral.readAccelerometer(ax, ay, az);
+        accelData[0] = ax / 2048.f;
+        accelData[1] = ay / 2048.f;
+        accelData[2] = az / 2048.f;
+    }
+
     float baroHeight = getAltitude(pressure);
 
     uint32_t timestamp = micros();
 
-    static float accelData[3];
-    static float gyroData[3];
-    //getGyrometerAndAccelerometer(gyroData, accelData);
-
     altitude.estimate(accelData, gyroData, baroHeight, timestamp);
 
-    /*
     Serial.print(baroHeight);
     Serial.print(",");
     Serial.print(altitude.getAltitude());
@@ -151,5 +177,4 @@ void loop(void)
     Serial.print(altitude.getVerticalVelocity());
     Serial.print(",");
     Serial.println(altitude.getVerticalAcceleration());
-    */
 }
