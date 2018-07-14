@@ -24,7 +24,7 @@ This library is extremely easy to use. Go to the [releases](https://github.com/j
 Clonning/Downloading the library in your `Arduino/libraries` folder is the only step that has to be performed before getting into the actual coding. To be able to use the library in your code add the following line at the beginning of your file:
 
 ```cpp
-#include "altitude.hpp"
+#include "altitude.h"
 ```
 
 We are ready now to instantiate the estimator where needed. This can be done by:
