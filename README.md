@@ -56,6 +56,8 @@ altitude.getVerticalAcceleration() // get estimated vertical acceleration in m/s
 
 A fully working [example](https://github.com/juangallostra/AltitudeEstimation/blob/master/examples/AltitudeEstimation/AltitudeEstimation.ino) can be found at `AltitudeEstimation.ino` under `examples/AltitudeEstimation`. The provided code assumes that the hardware used is an MPU9250 IMU and a MS5637 barometer. Arduino libraries for both them are available [here](https://github.com/simondlevy/MPU9250) (MPU9250) and [here](https://github.com/BonaDrone/MS5637) (MS5637).
 
+There is [another example](https://github.com/juangallostra/AltitudeEstimation/blob/master/examples/SENtralAltitude/SENtralAltitude.ino) thanks to [Simon D. Levy](https://github.com/simondlevy), making use of the EM7180 SENtral sensor hub. The sketch is `SENtralAltitude.ino` and can be fund under `examples/SENtralAltitude`. The drivers for the EM7180 can be downloaded from [here](https://github.com/simondlevy/EM7180).
+
 
 ### Available methods
 
