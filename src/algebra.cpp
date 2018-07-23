@@ -1,5 +1,5 @@
 /*
-  algebra.hpp: This file contains a number of utilities useful for handling
+  algebra.cpp: This file contains a number of utilities useful for handling
   3D vectors
 
   This work is an adaptation from vvector.h, written by Linas Vepstras. The

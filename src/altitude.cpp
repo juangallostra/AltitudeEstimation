@@ -1,5 +1,5 @@
 /*
-    altitude.hpp: Altitude estimation via barometer/accelerometer fusion
+    altitude.cpp: Altitude estimation via barometer/accelerometer fusion
 */
 
 #include "filters.h"

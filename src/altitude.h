@@ -1,5 +1,5 @@
 /*
-    altitude.hpp: Altitude estimation via barometer/accelerometer fusion
+    altitude.h: Altitude estimation via barometer/accelerometer fusion
 */
 
 # pragma once
