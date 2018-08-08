@@ -141,10 +141,11 @@ float KalmanFilter::estimate(float gyro[3], float accel[3], float deltat)
     float accelEarth;
     scaleVector(accel, 9.81, accel); // Scale accel readings since they are measured in gs
     // perform estimation
+    // predictions
     predictState(predictedState, gyro, deltat);
     predictErrorCovariance(errorCovariance, gyro, deltat);
+    // updates
     updateGain(gain, errorCovariance);
-    // The above has been tested
     updateState(updatedState, predictedState, gain, accel);
     updateErrorCovariance(updatedErrorCovariance, errorCovariance, gain);
     // Store required values for next iteration
