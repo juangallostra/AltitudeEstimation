@@ -185,7 +185,6 @@ void loop(void)
     // get all necessary data
     float pressure;
     barometer.getPressure(& pressure);
-    Serial.println(pressure);
     float baroHeight = getAltitude(pressure);
     uint32_t timestamp = micros();
     float accelData[3];
