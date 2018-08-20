@@ -1,5 +1,5 @@
 /*
-    altitude.h: Altitude estimation via barometer/accelerometer fusion
+    altitude.h: Altitude estimation via rangefinder/accelerometer fusion
 */
 
 # pragma once
@@ -16,7 +16,7 @@ class AltitudeEstimator {
     // sensor's standard deviations
     float sigmaAccel;
     float sigmaGyro;
-    float sigmaBaro;
+    float sigmaRange;
     // Acceleration markov chain model state transition constant
     float ca;
     // Zero-velocity update acceleration threshold
@@ -40,10 +40,10 @@ class AltitudeEstimator {
 
   public:
 
-    AltitudeEstimator(float sigmaAccel, float sigmaGyro, float sigmaBaro,
+    AltitudeEstimator(float sigmaAccel, float sigmaGyro, float sigmaRange,
                       float ca, float accelThreshold);
 
-    void estimate(float accel[3], float gyro[3], float baroHeight, uint32_t timestamp);
+    void estimate(float accel[3], float gyro[3], float rangeHeight, uint32_t timestamp);
 
     float getAltitude();
 

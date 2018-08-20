@@ -6,18 +6,18 @@
 #include "algebra.h"
 #include "altitude.h"
 
-AltitudeEstimator::AltitudeEstimator(float sigmaAccel, float sigmaGyro, float sigmaBaro,
+AltitudeEstimator::AltitudeEstimator(float sigmaAccel, float sigmaGyro, float sigmaRange,
                                      float ca, float accelThreshold)
-:kalman(ca, sigmaGyro, sigmaAccel), complementary(sigmaAccel, sigmaBaro, accelThreshold)
+:kalman(ca, sigmaGyro, sigmaAccel), complementary(sigmaAccel, sigmaRange, accelThreshold)
 {
       this->sigmaAccel = sigmaAccel;
       this->sigmaGyro = sigmaGyro;
-      this->sigmaBaro = sigmaBaro;
+      this->sigmaRange = sigmaRange;
       this->ca = ca;
       this->accelThreshold = accelThreshold;
 }
 
-void AltitudeEstimator::estimate(float accel[3], float gyro[3], float baroHeight, uint32_t timestamp)
+void AltitudeEstimator::estimate(float accel[3], float gyro[3], float rangeHeight, uint32_t timestamp)
 {
         float deltat = (float)(timestamp-previousTime)/1000000.0f;
         float verticalAccel = kalman.estimate(pastGyro,
@@ -25,7 +25,7 @@ void AltitudeEstimator::estimate(float accel[3], float gyro[3], float baroHeight
                                               deltat);
         complementary.estimate(& estimatedVelocity,
                                & estimatedAltitude,
-                               baroHeight,
+                               rangeHeight,
                                pastAltitude,
                                pastVerticalVelocity,
                                pastVerticalAccel,
