@@ -7,7 +7,10 @@
 #include "filters.h"
 #include "algebra.h"
 
+#include <Arduino.h> // XXX For micros; eventually need to compute micros() elsewhere
+
 class AltitudeEstimator {
+
   private:
     // required parameters for the filters used for the estimations
     // sensor's standard deviations
@@ -38,55 +41,14 @@ class AltitudeEstimator {
   public:
 
     AltitudeEstimator(float sigmaAccel, float sigmaGyro, float sigmaBaro,
-                           float ca, float accelThreshold)
-    :kalman(ca, sigmaGyro, sigmaAccel), complementary(sigmaAccel, sigmaBaro, accelThreshold)
-    {
-      this->sigmaAccel = sigmaAccel;
-      this->sigmaGyro = sigmaGyro;
-      this->sigmaBaro = sigmaBaro;
-      this->ca = ca;
-      this->accelThreshold = accelThreshold;
+                      float ca, float accelThreshold);
 
-    }
+    void estimate(float accel[3], float gyro[3], float baroHeight, uint32_t timestamp);
 
-    void estimate(float accel[3], float gyro[3], float baroHeight, uint32_t timestamp)
-    {
-        float deltat = (float)(timestamp-previousTime)/1000000.0f;
-        float verticalAccel = kalman.estimate(pastGyro,
-                                              pastAccel,
-                                              deltat);
-        complementary.estimate(& estimatedVelocity,
-                               & estimatedAltitude,
-                               baroHeight,
-                               pastAltitude,
-                               pastVerticalVelocity,
-                               pastVerticalAccel,
-                               deltat);
-        // update values for next iteration
-        copyVector(pastGyro, gyro);
-        copyVector(pastAccel, accel);
-        pastAltitude = estimatedAltitude;
-        pastVerticalVelocity = estimatedVelocity;
-        pastVerticalAccel = verticalAccel;
-        previousTime = timestamp;
-    }
+    float getAltitude();
 
-    float getAltitude()
-    {
-        // return the last estimated altitude
-        return estimatedAltitude;
-    }
+    float getVerticalVelocity();
 
-    float getVerticalVelocity()
-    {
-        // return the last estimated vertical velocity
-        return estimatedVelocity;
-    }
-
-    float getVerticalAcceleration()
-    {
-        // return the last estimated vertical acceleration
-        return pastVerticalAccel;
-    }
+    float getVerticalAcceleration();
 
 }; // class AltitudeEstimator
