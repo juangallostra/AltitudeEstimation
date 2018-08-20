@@ -7,6 +7,14 @@
 
 #include "filters.h"
 
+// Kalman filter for vertical velocity and acceleration estimation
+KalmanFilter::KalmanFilter(float ca, float sigmaGyro, float sigmaAccel)
+{
+    this->ca = ca;
+    this->sigmaGyro = sigmaGyro;
+    this->sigmaAccel = sigmaAccel;
+}
+
 void KalmanFilter::getPredictionCovariance(float covariance[3][3], float previousState[3], float deltat)
 {
     // required matrices for the operations
@@ -121,14 +129,6 @@ void KalmanFilter::updateErrorCovariance(float covariance[3][3], float errorCova
     copyMatrix3x3(covariance, tmp2);
 }
 
-
-KalmanFilter::KalmanFilter(float ca, float sigmaGyro, float sigmaAccel)
-{
-    this->ca = ca;
-    this->sigmaGyro = sigmaGyro;
-    this->sigmaAccel = sigmaAccel;
-}
-
 float KalmanFilter::estimate(float gyro[3], float accel[3], float deltat)
 {
     float predictedState[3];
@@ -160,6 +160,22 @@ float KalmanFilter::estimate(float gyro[3], float accel[3], float deltat)
 }
 
 
+// Complementary Filter for IMU and rangefinder data fusion
+ComplementaryFilter::ComplementaryFilter(float sigmaAccel, float sigmaRange, float accelThreshold)
+{
+    // Compute the filter gain
+    gain[0] = sqrt(2 * sigmaAccel / sigmaRange);
+    gain[1] = sigmaAccel / sigmaRange;
+    // If acceleration is below the threshold the ZUPT counter
+    // will be increased
+    this->accelThreshold = accelThreshold;
+    // initialize zero-velocity update
+    ZUPTIdx = 0;
+    for (uint8_t k = 0; k < ZUPT_SIZE; ++k) {
+        ZUPT[k] = 0;
+    }
+}
+
 float ComplementaryFilter::ApplyZUPT(float accel, float vel)
 {
     // first update ZUPT array with latest estimation
@@ -174,29 +190,43 @@ float ComplementaryFilter::ApplyZUPT(float accel, float vel)
     return 0.0;
 }
 
-
-ComplementaryFilter::ComplementaryFilter(float sigmaAccel, float sigmaBaro, float accelThreshold)
-{
-    // Compute the filter gain
-    gain[0] = sqrt(2 * sigmaAccel / sigmaBaro);
-    gain[1] = sigmaAccel / sigmaBaro;
-    // If acceleration is below the threshold the ZUPT counter
-    // will be increased
-    this->accelThreshold = accelThreshold;
-    // initialize zero-velocity update
-    ZUPTIdx = 0;
-    for (uint8_t k = 0; k < ZUPT_SIZE; ++k) {
-        ZUPT[k] = 0;
-    }
-}
-
-void ComplementaryFilter::estimate(float * velocity, float * altitude, float baroAltitude,
+void ComplementaryFilter::estimate(float * velocity, float * altitude, float rangeAltitude,
         float pastAltitude, float pastVelocity, float accel, float deltat)
 {
     // Apply complementary filter
-    *altitude = pastAltitude + deltat*(pastVelocity + (gain[0] + gain[1]*deltat/2)*(baroAltitude-pastAltitude))+
+    *altitude = pastAltitude + deltat*(pastVelocity + (gain[0] + gain[1]*deltat/2)*(rangeAltitude-pastAltitude))+
         accel*pow(deltat, 2)/2;
-    *velocity = pastVelocity + deltat*(gain[1]*(baroAltitude-pastAltitude) + accel);
+    *velocity = pastVelocity + deltat*(gain[1]*(rangeAltitude-pastAltitude) + accel);
     // Compute zero-velocity update
     *velocity = ApplyZUPT(accel, *velocity);
+}
+
+
+// Kalman Filter for Range Finder fusion
+RangeFinderKalmanFilter::RangeFinderKalmanFilter(float measurementCovariance)
+{
+    this->measurementCovariance = measurementCovariance;
+}
+
+float RangeFinderKalmanFilter::updateGain()
+{
+    return errorCovariance * H / (H * errorCovariance * H + measurementCovariance);
+}
+
+float RangeFinderKalmanFilter::updateState(float gain, float predictedState, float measurement)
+{
+    return predictedState + gain * (measurement - H * predictedState);
+}
+
+float RangeFinderKalmanFilter::updateErrorCovariance(float gain, float errorCovariance)
+{
+    return errorCovariance - gain * H * errorCovariance;
+}
+
+float RangeFinderKalmanFilter::estimate(float predictedState, float measurement)
+{
+    float gain = updateGain();
+    float updatedState = updateState(gain, predictedState, measurement);
+    errorCovariance = updateErrorCovariance(gain, errorCovariance);
+    return updatedState;
 }
