@@ -8,9 +8,11 @@
 #include <Wire.h>
 #include <math.h>
 
-// Assuming the IMU is an MPU9250 and thr baro a MS5637
+// Assuming the IMU is an MPU9250, the baro a MS5637
+// and the rangefinder (optional) a VL53L1X
 #include <MPU9250.h>
 #include <MS5637.h>
+#include <VL53L1X.h>
 
 // Number of readings from which standard deviations will be computed
 uint16_t iterations = 1000;
@@ -200,6 +202,30 @@ void getAccelAndGyroSigmas(double* sigmaAccel, double* sigmaGyro, uint16_t numbe
 
 }
 
+static VL53L1X distanceSensor;
+bool rangefinderFound = false;
+
+// Function to compute barometer standard deviations
+float getRangeSigma(uint16_t numberOfIterations)
+{
+   // here we will store all distance readings
+   float history[numberOfIterations];
+   float meanDistance = 0;
+   for (uint16_t index = 0; index < numberOfIterations; index++) {
+       float readDistance = (float)distanceSensor.getDistance();
+       history[index] = readDistance;
+       // we will use pressureSum to compute the mean pressure
+       meanDistance += readDistance;
+   }
+   meanDistance /= numberOfIterations;
+   // Compute standard deviation
+   float numerator = 0;
+   for (uint16_t index = 0; index < numberOfIterations; index++) {
+     numerator += pow(history[index] - meanDistance, 2);
+   }
+   return sqrt(numerator / (numberOfIterations - 1));
+}
+
 // Arduino setup and loop functions
 void setup(void)
 {
@@ -227,6 +253,11 @@ void setup(void)
 
     // Initialize the MPU9250
     imu.initMPU9250(ASCALE, GSCALE, SAMPLE_RATE_DIVISOR);
+
+    // Check if rangefinder is found
+    if (distanceSensor.begin() == true) {
+      rangefinderFound = true;
+    }
 }
 
 void loop(void)
@@ -243,4 +274,11 @@ void loop(void)
     Serial.println(accelSigma, 15);
     Serial.print("Gyrometer standard deviation: ");
     Serial.println(gyroSigma, 15);
+    if (rangefinderFound)
+    {
+       Serial.println("Computing rangefinder standard deviation");
+       float rangeSigma = getRangeSigma(iterations);
+       Serial.print("Rangefinder standard deviation: ");
+       Serial.println(rangeSigma, 15);
+    }
 }

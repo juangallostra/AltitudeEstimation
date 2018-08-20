@@ -6,9 +6,10 @@
 #include <Arduino.h>
 #include <ArduinoTransfer.h>
 #include <Wire.h>
-// Assuming the IMU is an MPU9250 and thr baro a MS5637
+// Assuming the IMU is an MPU9250, the baro a MS5637 and the rangefinder a VL53L1X
 #include <MPU9250.h>
 #include <MS5637.h>
+#include "VL53L1X.h"
 
 #include "altitude.h"
 
