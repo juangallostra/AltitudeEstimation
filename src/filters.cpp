@@ -200,33 +200,3 @@ void ComplementaryFilter::estimate(float * velocity, float * altitude, float ran
     // Compute zero-velocity update
     *velocity = ApplyZUPT(accel, *velocity);
 }
-
-
-// Kalman Filter for Range Finder fusion
-RangeFinderKalmanFilter::RangeFinderKalmanFilter(float measurementCovariance)
-{
-    this->measurementCovariance = measurementCovariance;
-}
-
-float RangeFinderKalmanFilter::updateGain()
-{
-    return errorCovariance * H / (H * errorCovariance * H + measurementCovariance);
-}
-
-float RangeFinderKalmanFilter::updateState(float gain, float predictedState, float measurement)
-{
-    return predictedState + gain * (measurement - H * predictedState);
-}
-
-float RangeFinderKalmanFilter::updateErrorCovariance(float gain, float errorCovariance)
-{
-    return errorCovariance - gain * H * errorCovariance;
-}
-
-float RangeFinderKalmanFilter::estimate(float predictedState, float measurement)
-{
-    float gain = updateGain();
-    float updatedState = updateState(gain, predictedState, measurement);
-    errorCovariance = updateErrorCovariance(gain, errorCovariance);
-    return updatedState;
-}
