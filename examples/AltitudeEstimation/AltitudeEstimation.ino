@@ -9,7 +9,7 @@
 // Assuming the IMU is an MPU9250, the baro a MS5637 and the rangefinder a VL53L1X
 #include <MPU9250.h>
 #include <MS5637.h>
-#include "VL53L1X.h"
+#include <VL53L1X.h>
 
 #include "altitude.h"
 
@@ -133,12 +133,17 @@ static void getGyrometerAndAccelerometer(float gyro[3], float accel[3])
 
 }
 
+static VL53L1X distanceSensor;
+
 // Altitude estimator
 static AltitudeEstimator altitude = AltitudeEstimator(0.0005, // sigma Accel
         0.0005, // sigma Gyro
-        0.018,   // sigma Baro
+        0.001,   // sigma Range
         0.5, // ca
         0.1);// accelThreshold
+
+// We will control when the data is sent through serial
+float printTime = millis();
 
 void setup(void)
 {
@@ -179,24 +184,38 @@ void setup(void)
     pinMode(INTERRUPT_PIN, INPUT);
     attachInterrupt(INTERRUPT_PIN, interruptHandler, RISING);
 
+    if (distanceSensor.begin() == false) {
+        while (true) {
+            Serial.println("Sensor offline!");
+            delay(200);
+        }
+    }
+
 }
 
 void loop(void)
 {
     // get all necessary data
-    float pressure;
-    barometer.getPressure(& pressure);
-    float baroHeight = getAltitude(pressure);
+    //float pressure;
+    //barometer.getPressure(& pressure);
+    //float baroHeight = getAltitude(pressure);
+    float rangeHeight = (float)distanceSensor.getDistance() / 1000.0f;
     uint32_t timestamp = micros();
     float accelData[3];
     float gyroData[3];
     getGyrometerAndAccelerometer(gyroData, accelData);
-    altitude.estimate(accelData, gyroData, baroHeight, timestamp);
-    Serial.print(baroHeight);
-    Serial.print(",");
-    Serial.print(altitude.getAltitude());
-    Serial.print(",");
-    Serial.print(altitude.getVerticalVelocity());
-    Serial.print(",");
-    Serial.println(altitude.getVerticalAcceleration());
+    altitude.estimate(accelData, gyroData, rangeHeight, timestamp);
+    float currentTime = millis();
+    // print data every 5 millis
+    if (currentTime-printTime > 5)
+    {
+        Serial.print(rangeHeight);
+        Serial.print(",");
+        Serial.print(altitude.getAltitude());
+        Serial.print(",");
+        Serial.print(altitude.getVerticalVelocity());
+        Serial.print(",");
+        Serial.println(altitude.getVerticalAcceleration());
+        printTime = currentTime;
+    }
 }
