@@ -10,6 +10,8 @@
 #include <MPU9250.h>
 #include <MS5637.h>
 #include <VL53L1X.h>
+// For quaternion computation
+#include <MadgwickAHRS.hpp>
 
 #include "altitude.h"
 
@@ -98,7 +100,7 @@ static float adc2rad(int16_t adc, float bias)
     return (adc * gRes - bias) * M_PI / 180;
 }
 
-static void getGyrometerAndAccelerometer(float gyro[3], float accel[3])
+static void getGyrometerAndAccelerometer(float gyro[3], float accel[3], float _q[4])
 {
     if (gotNewData) {
 
@@ -127,13 +129,22 @@ static void getGyrometerAndAccelerometer(float gyro[3], float accel[3])
             accel[1] = ay;
             accel[2] = az;
 
+            // Update quaternion estimation
+            MadgwickAHRSupdateIMU(_q, gx, -gy, -gz, -ax, ay, az);
         } // if (imu.checkNewAccelGyroData())
-
     } // if gotNewData
-
 }
 
 static VL53L1X distanceSensor;
+
+// Helper function to compute euler angles
+static void computeEulerAngles(float q[4], float euler[3])
+{
+    euler[0] = atan2(2.0f*(q[0]*q[1]+q[2]*q[3]),q[0]*q[0]-q[1]*q[1]-q[2]*q[2]+q[3]*q[3]);
+    euler[1] =  asin(2.0f*(q[1]*q[3]-q[0]*q[2]));
+    euler[2] = atan2(2.0f*(q[1]*q[2]+q[0]*q[3]),q[0]*q[0]+q[1]*q[1]-q[2]*q[2]-q[3]*q[3]);
+}
+
 
 // Altitude estimator
 static AltitudeEstimator altitude = AltitudeEstimator(0.0005, // sigma Accel
@@ -199,11 +210,16 @@ void loop(void)
     //float pressure;
     //barometer.getPressure(& pressure);
     //float baroHeight = getAltitude(pressure);
-    float rangeHeight = (float)distanceSensor.getDistance() / 1000.0f;
-    uint32_t timestamp = micros();
     float accelData[3];
     float gyroData[3];
-    getGyrometerAndAccelerometer(gyroData, accelData);
+    float quaternion[4];
+    getGyrometerAndAccelerometer(gyroData, accelData, quaternion);
+    float rangeHeight = (float)distanceSensor.getDistance() / 1000.0f;
+    uint32_t timestamp = micros();
+    // Compensate for effect of pitch, roll on rangefinder reading
+    float euler[3];
+    computeEulerAngles(quaternion, euler);
+    rangeHeight =  rangeHeight * cos(euler[0]) * cos(euler[1]);
     altitude.estimate(accelData, gyroData, rangeHeight, timestamp);
     float currentTime = millis();
     // print data every 5 millis
