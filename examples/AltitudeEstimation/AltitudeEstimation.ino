@@ -4,10 +4,9 @@
  */
 
 #include <Arduino.h>
-#include <ArduinoTransfer.h>
 #include <Wire.h>
 // Assuming the IMU is an MPU9250 and thr baro a MS5637
-#include <MPU9250.h>
+#include <MPU9250_Passthru.h>
 #include <MS5637.h>
 
 #include "altitude.h"
@@ -59,42 +58,24 @@ static float getAltitude(float pressure)
 
 // helper variables and functions for obtaining IMU data
 // Sensor full-scale settings
-static const Ascale_t ASCALE = AFS_8G;
-static const Gscale_t GSCALE = GFS_2000DPS;
-static const Mscale_t MSCALE = MFS_16BITS;
-static const Mmode_t MMODE = M_100Hz;
+static const MPUIMU::Ascale_t ASCALE = MPUIMU::AFS_2G;
+static const MPUIMU::Gscale_t GSCALE = MPUIMU::GFS_2000DPS;
+static const MPU9250::Mscale_t MSCALE = MPU9250::MFS_16BITS;
+static const MPU9250::Mmode_t MMODE = MPU9250::M_100Hz;
 // SAMPLE_RATE_DIVISOR: (1 + SAMPLE_RATE_DIVISOR) is a simple divisor of the fundamental 1000 kHz rate of the gyro and accel, so
 // SAMPLE_RATE_DIVISOR = 0 means 1 kHz sample rate for both accel and gyro, 4 means 200 Hz, etc.
 static const uint8_t SAMPLE_RATE_DIVISOR = 0;
 // MPU9250 add-on board has interrupt on Butterfly pin 8
 static const uint8_t INTERRUPT_PIN = 8;
-// Create byte-transfer objects for Arduino I^2C
-static ArduinoI2C mpu = ArduinoI2C(MPU9250::MPU9250_ADDRESS);
-static ArduinoI2C mag = ArduinoI2C(MPU9250::AK8963_ADDRESS);
 
 // Use the MPU9250 in pass-through mode
-static MPU9250Passthru imu = MPU9250Passthru(&mpu, &mag);;
-// Store imu data
-static int16_t imuData[7] = {0,0,0,0,0,0,0};
-// For scaling to normal units (accelerometer G's, gyrometer rad/sec, magnetometer mGauss)
-static float aRes;
-static float gRes;
-static float mRes;
-// We compute these at startup
-static float gyroBias[3]  = {0,0,0};
-static float accelBias[3] = {0,0,0};
+static MPU9250_Passthru imu(ASCALE, GSCALE, MSCALE, MMODE, SAMPLE_RATE_DIVISOR);
 // flag for when new data is received
 static bool gotNewData = false;
 
 static void interruptHandler()
 {
     gotNewData = true;
-}
-
-// Raw analog-to-digital values converted to radians per second
-static float adc2rad(int16_t adc, float bias)
-{
-    return (adc * gRes - bias) * M_PI / 180;
 }
 
 static void getGyrometerAndAccelerometer(float gyro[3], float accel[3])
@@ -104,28 +85,18 @@ static void getGyrometerAndAccelerometer(float gyro[3], float accel[3])
         gotNewData = false;
 
         if (imu.checkNewAccelGyroData()) {
-
-            imu.readMPU9250Data(imuData);
-
-            // Convert the accleration value into g's
-            float ax = imuData[0]*aRes - accelBias[0];  // get actual g value, this depends on scale being set
-            float ay = imuData[1]*aRes - accelBias[1];
-            float az = imuData[2]*aRes - accelBias[2];
-
-            // Convert the gyro value into degrees per second
-            float gx = adc2rad(imuData[4], gyroBias[0]);
-            float gy = adc2rad(imuData[5], gyroBias[1]);
-            float gz = adc2rad(imuData[6], gyroBias[2]);
-
-            // Copy gyro values back out
-            gyro[0] = gx;
-            gyro[1] = gy;
-            gyro[2] = gz;
+            float ax, ay, az, gx, gy, gz;
+            imu.readAccelerometer(ay, ax, az);
+            imu.readGyrometer(gy, gx, gz);
+            gx = -gx;
+            // Copy gyro values back out in rad/sec
+            gyro[0] = gx * M_PI / 180.0f;
+            gyro[1] = gy * M_PI / 180.0f;
+            gyro[2] = gz * M_PI / 180.0f;
             // and acceleration values
             accel[0] = ax;
             accel[1] = ay;
             accel[2] = az;
-
         } // if (imu.checkNewAccelGyroData())
 
     } // if gotNewData
@@ -146,19 +117,9 @@ void setup(void)
     Wire.setClock(400000); // I2C frequency at 400 kHz
     delay(1000);
 
-    // Reset the MPU9250
-    imu.resetMPU9250();
-
-    // get sensor resolutions, only need to do this once
-    aRes = imu.getAres(ASCALE);
-    gRes = imu.getGres(GSCALE);
-    mRes = imu.getMres(MSCALE);
-
-    // Calibrate gyro and accelerometers, load biases in bias registers
-    imu.calibrateMPU9250(gyroBias, accelBias);
-
-    // Initialize the MPU9250
-    imu.initMPU9250(ASCALE, GSCALE, SAMPLE_RATE_DIVISOR);
+    // initialize the MPU9250
+    imu.begin();
+    
     // Set all pressure history entries to 0
     for (uint8_t k = 0; k < HISTORY_SIZE; ++k) {
         history[k] = 0;
