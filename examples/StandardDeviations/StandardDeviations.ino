@@ -4,12 +4,10 @@
 */
 
 #include <Arduino.h>
-#include <ArduinoTransfer.h>
 #include <Wire.h>
 #include <math.h>
-
 // Assuming the IMU is an MPU9250 and thr baro a MS5637
-#include <MPU9250.h>
+#include <MPU9250_Passthru.h>
 #include <MS5637.h>
 
 // Number of readings from which standard deviations will be computed
@@ -42,43 +40,25 @@ float getBarometerSigma(uint16_t numberOfIterations)
 
 // Acelerometer anf Gyrometer helper methods and variables
 
-// Sensor full-scale settings
-const Ascale_t ASCALE = AFS_8G;
-const Gscale_t GSCALE = GFS_2000DPS;
-const Mscale_t MSCALE = MFS_16BITS;
-const Mmode_t MMODE = M_100Hz;
+// Sensor scale settings
+const MPUIMU::Ascale_t ASCALE = MPUIMU::AFS_8G;
+const MPUIMU::Gscale_t GSCALE = MPUIMU::GFS_2000DPS;
+const MPU9250::Mscale_t MSCALE = MPU9250::MFS_16BITS;
+const MPU9250::Mmode_t MMODE = MPU9250::M_100Hz;
 // SAMPLE_RATE_DIVISOR: (1 + SAMPLE_RATE_DIVISOR) is a simple divisor of the fundamental 1000 kHz rate of the gyro and accel, so
 // SAMPLE_RATE_DIVISOR = 0 means 1 kHz sample rate for both accel and gyro, 4 means 200 Hz, etc.
 const uint8_t SAMPLE_RATE_DIVISOR = 0;
 // MPU9250 add-on board has interrupt on Butterfly pin 8
 const uint8_t INTERRUPT_PIN = 8;
-// Create byte-transfer objects for Arduino I^2C
-ArduinoI2C mpu = ArduinoI2C(MPU9250::MPU9250_ADDRESS);
-ArduinoI2C mag = ArduinoI2C(MPU9250::AK8963_ADDRESS);
 
 // Use the MPU9250 in pass-through mode
-MPU9250Passthru imu = MPU9250Passthru(&mpu, &mag);;
-// Store imu data
-int16_t imuData[7] = {0,0,0,0,0,0,0};
-// For scaling to normal units (accelerometer G's, gyrometer rad/sec, magnetometer mGauss)
-float aRes;
-float gRes;
-float mRes;
-// We compute these at startup
-float gyroBias[3]  = {0,0,0};
-float accelBias[3] = {0,0,0};
+static MPU9250_Passthru imu(ASCALE, GSCALE, MSCALE, MMODE, SAMPLE_RATE_DIVISOR);
 // flag for when new data is received
 bool gotNewData = false;
 
 static void interruptHandler()
 {
     gotNewData = true;
-}
-
-// Raw analog-to-digital values converted to radians per second
-float adc2rad(int16_t adc, float bias)
-{
-    return (adc * gRes - bias) * M_PI / 180;
 }
 
 void getGyrometerAndAccelerometer(float gyro[3], float accel[3])
@@ -88,28 +68,20 @@ void getGyrometerAndAccelerometer(float gyro[3], float accel[3])
         gotNewData = false;
 
         if (imu.checkNewAccelGyroData()) {
-
-            imu.readMPU9250Data(imuData);
-
-            // Convert the accleration value into g's
-            float ax = imuData[0]*aRes - accelBias[0];  // get actual g value, this depends on scale being set
-            float ay = imuData[1]*aRes - accelBias[1];
-            float az = imuData[2]*aRes - accelBias[2];
-
-            // Convert the gyro value into degrees per second
-            float gx = adc2rad(imuData[4], gyroBias[0]);
-            float gy = adc2rad(imuData[5], gyroBias[1]);
-            float gz = adc2rad(imuData[6], gyroBias[2]);
-
-            // Copy gyro values back out
-            gyro[0] = gx;
-            gyro[1] = gy;
-            gyro[2] = gz;
-            // and acceleration values
-            accel[0] = ax;
-            accel[1] = ay;
-            accel[2] = az;
-
+          
+          float ax, ay, az, gx, gy, gz;
+          imu.readAccelerometer(ay, ax, az);
+          imu.readGyrometer(gy, gx, gz);
+          gx = -gx;
+          // Copy gyro values back out in rad/sec
+          gyro[0] = gx * M_PI / 180.0f;
+          gyro[1] = gy * M_PI / 180.0f;
+          gyro[2] = gz * M_PI / 180.0f;
+          // and acceleration values
+          accel[0] = ax;
+          accel[1] = ay;
+          accel[2] = az;
+          
         } // if (imu.checkNewAccelGyroData())
 
     } // if gotNewData
@@ -214,19 +186,8 @@ void setup(void)
     Wire.setClock(400000); // I2C frequency at 400 kHz
     delay(1000);
 
-    // Reset the MPU9250
-    imu.resetMPU9250();
-
-    // get sensor resolutions, only need to do this once
-    aRes = imu.getAres(ASCALE);
-    gRes = imu.getGres(GSCALE);
-    mRes = imu.getMres(MSCALE);
-
-    // Calibrate gyro and accelerometers, load biases in bias registers
-    imu.calibrateMPU9250(gyroBias, accelBias);
-
-    // Initialize the MPU9250
-    imu.initMPU9250(ASCALE, GSCALE, SAMPLE_RATE_DIVISOR);
+    // begin the MPU9250
+    imu.begin();
 }
 
 void loop(void)
