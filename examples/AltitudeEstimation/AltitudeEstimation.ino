@@ -140,6 +140,8 @@ void loop(void)
     computeEulerAngles(quaternion, euler);
     rangeHeight =  rangeHeight * cos(euler[0]) * cos(euler[1]);
     altitude.estimate(accelData, gyroData, rangeHeight, timestamp);
+    Serial.print(currentTime/1000.0f);
+    Serial.print(",");
     Serial.print(rangeHeight);
     Serial.print(",");
     Serial.print(altitude.getAltitude());
