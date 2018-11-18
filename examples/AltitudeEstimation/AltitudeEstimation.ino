@@ -5,103 +5,60 @@
 
 #include <Arduino.h>
 #include <Wire.h>
-// Assuming the IMU is an MPU9250 and thr baro a MS5637
-#include <MPU9250_Passthru.h>
-#include <MS5637.h>
-
+// IMU
+#include <LSM6DSM.h>
+// Barometer
+#include <LPS22HB.h>
+#include "barometer.h"
+// Rangefinder
+#include <VL53L1X.h>
+// estimator
 #include "altitude.h"
 
-// helper variables and functions for obtaining baro data
-static const uint8_t HISTORY_SIZE = 48;
+uint8_t LED_PIN = 38;
+// --- IMU related variables and functions ---
+// LSM6DSM full-scale settings
+static const LSM6DSM::Ascale_t Ascale = LSM6DSM::AFS_2G;
+static const LSM6DSM::Gscale_t Gscale = LSM6DSM::GFS_2000DPS;
+static const LSM6DSM::Rate_t   AODR   = LSM6DSM::ODR_1660Hz;
+static const LSM6DSM::Rate_t   GODR   = LSM6DSM::ODR_1660Hz;
 
-static float   groundAltitude = 0;
-static float   groundPressure = 0;
-static float   pressureSum = 0;
-static float   history[HISTORY_SIZE];
-static uint8_t historyIdx = 0;
-static int     endCalibration = 120;
+// Biases computed by Kris
+float ACCEL_BIAS[3] = {0.0, 0.0, 0.0};
+float GYRO_BIAS[3]  = {0.0, 0.0, 0.0};
 
-static MS5637 barometer = MS5637();
 
-// Pressure in millibars to altitude in meters. We assume
-// millibars are the units of the pressure readings from the sensor
-static float millibarsToMeters(float mbar)
+LSM6DSM lsm6dsm = LSM6DSM(Ascale, Gscale, AODR, GODR, ACCEL_BIAS, GYRO_BIAS);
+
+static void imuRead(float gyro[3], float accel[3])
 {
-    // see: https://www.weather.gov/media/epz/wxcalc/pressureAltitude.pdf
-    return (1.0f - powf(mbar / 1013.25f, 0.190295f)) * 44330.0f;
+    if (lsm6dsm.checkNewData()) {
+        float _ax, _ay, _az, _gx, _gy, _gz;
+        lsm6dsm.readData(_ax, _ay, _az, _gx, _gy, _gz);
+
+        // Negate to support board orientation
+        _ax = -_ax;
+        _gy = -_gy;
+        _gz = -_gz;
+
+        // Copy gyro values back out in rad/sec
+        gyro[0] = _gx * M_PI / 180.0f;
+        gyro[1] = _gy * M_PI / 180.0f;
+        gyro[2] = _gz * M_PI / 180.0f;
+        // and acceleration values
+        accel[0] = _ax;
+        accel[1] = _ay;
+        accel[2] = _az;
+
+    } 
 }
 
-// Calibrate the baro by setting the average measured pressure as the
-// ground pressure and the corresponding altitude as the ground altitude.
-static void calibrate(float pressure)
-{
-    // Update pressure history
-    history[historyIdx] = pressure;
-    pressureSum += pressure;
-    // cycle the index throught the history array
-    uint8_t nextIndex = (historyIdx + 1) % HISTORY_SIZE;
-    // Remove next reading from sum so that pressureSum is kept in sync
-    pressureSum -= history[nextIndex];
-    historyIdx = nextIndex;
-    // groundPressure will stabilize at 8 times the average measured
-    // pressure (when groundPressure/8 equals pressureSum/(HISTORY_SIZE-1))
-    // This acts as a low pass filter and helps to reduce noise
-    groundPressure -= groundPressure / 8;
-    groundPressure += pressureSum / (HISTORY_SIZE - 1);
-    groundAltitude = millibarsToMeters(groundPressure/8);
-}
+// --- Barometer related variables and functions ---
+// Pressure and temperature oversample rate
+static LPS22HB::Rate_t ODR = LPS22HB::P_75Hz;     
+static LPS22HB lps22hb = LPS22HB(ODR);
+cp::Barometer baro;
 
-static float getAltitude(float pressure)
-{
-    return  (millibarsToMeters(pressure) - groundAltitude);
-}
-
-// helper variables and functions for obtaining IMU data
-// Sensor full-scale settings
-static const MPUIMU::Ascale_t ASCALE = MPUIMU::AFS_2G;
-static const MPUIMU::Gscale_t GSCALE = MPUIMU::GFS_2000DPS;
-static const MPU9250::Mscale_t MSCALE = MPU9250::MFS_16BITS;
-static const MPU9250::Mmode_t MMODE = MPU9250::M_100Hz;
-// SAMPLE_RATE_DIVISOR: (1 + SAMPLE_RATE_DIVISOR) is a simple divisor of the fundamental 1000 kHz rate of the gyro and accel, so
-// SAMPLE_RATE_DIVISOR = 0 means 1 kHz sample rate for both accel and gyro, 4 means 200 Hz, etc.
-static const uint8_t SAMPLE_RATE_DIVISOR = 0;
-// MPU9250 add-on board has interrupt on Butterfly pin 8
-static const uint8_t INTERRUPT_PIN = 8;
-
-// Use the MPU9250 in pass-through mode
-static MPU9250_Passthru imu(ASCALE, GSCALE, MSCALE, MMODE, SAMPLE_RATE_DIVISOR);
-// flag for when new data is received
-static bool gotNewData = false;
-
-static void interruptHandler()
-{
-    gotNewData = true;
-}
-
-static void getGyrometerAndAccelerometer(float gyro[3], float accel[3])
-{
-    if (gotNewData) {
-
-        gotNewData = false;
-
-        if (imu.checkNewAccelGyroData()) {
-            float ax, ay, az, gx, gy, gz;
-            imu.readAccelerometer(ay, ax, az);
-            imu.readGyrometer(gy, gx, gz);
-            gx = -gx;
-            // Copy gyro values back out in rad/sec
-            gyro[0] = gx * M_PI / 180.0f;
-            gyro[1] = gy * M_PI / 180.0f;
-            gyro[2] = gz * M_PI / 180.0f;
-            // and acceleration values
-            accel[0] = ax;
-            accel[1] = ay;
-            accel[2] = az;
-        } // if (imu.checkNewAccelGyroData())
-
-    } // if gotNewData
-
-}
 
 // Altitude estimator
 static AltitudeEstimator altitude = AltitudeEstimator(0.0005, // sigma Accel
@@ -110,47 +67,41 @@ static AltitudeEstimator altitude = AltitudeEstimator(0.0005, // sigma Accel
         0.5, // ca
         0.1);// accelThreshold
 
+float pastTime = millis();
+float currentTime = millis();
+
 void setup(void)
 {
+    pinMode(LED_PIN, OUTPUT);
+    digitalWrite(LED_PIN, LOW);
     // Start I^2C
     Wire.begin();
     Wire.setClock(400000); // I2C frequency at 400 kHz
     delay(1000);
-
-    // initialize the MPU9250
-    imu.begin();
-    
-    // Set all pressure history entries to 0
-    for (uint8_t k = 0; k < HISTORY_SIZE; ++k) {
-        history[k] = 0;
-    }
-    // begin Barometer
-    barometer.begin();
-
-    // calibrate barometer
-    for (uint8_t k=0; k <= endCalibration; k++) {
-        float readPressure;
-        barometer.getPressure(& readPressure);
-        calibrate(readPressure);
-    }
+    // initialize sensors
+    lsm6dsm.begin();
+    lsm6dsm.calibrate(GYRO_BIAS, ACCEL_BIAS);
+    lps22hb.begin();
+    baro.init();
     // Begin serial comms
     Serial.begin(115200);
     // Set up the interrupt pin, it's set as active high, push-pull
-    pinMode(INTERRUPT_PIN, INPUT);
-    attachInterrupt(INTERRUPT_PIN, interruptHandler, RISING);
 
 }
 
 void loop(void)
 {
+  currentTime = millis();
+  if ((currentTime - pastTime) > 50)
+  {
     // get all necessary data
-    float pressure;
-    barometer.getPressure(& pressure);
-    float baroHeight = getAltitude(pressure);
+    float pressure = lps22hb.readPressure();
+    baro.update(pressure);
+    float baroHeight = baro.getAltitude();
     uint32_t timestamp = micros();
     float accelData[3];
     float gyroData[3];
-    getGyrometerAndAccelerometer(gyroData, accelData);
+    imuRead(gyroData, accelData);
     altitude.estimate(accelData, gyroData, baroHeight, timestamp);
     Serial.print(baroHeight);
     Serial.print(",");
@@ -159,4 +110,6 @@ void loop(void)
     Serial.print(altitude.getVerticalVelocity());
     Serial.print(",");
     Serial.println(altitude.getVerticalAcceleration());
+    pastTime = currentTime;
+  }
 }
