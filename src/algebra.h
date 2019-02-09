@@ -17,7 +17,8 @@
 
 #pragma once
 
-#include <cmath>
+//#include <cmath>
+#include <math.h>
 
 // Copy 3D vector
 void copyVector(float b[3],float a[3]);
