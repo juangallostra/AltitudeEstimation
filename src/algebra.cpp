@@ -14,7 +14,7 @@
   Adapted for altitude estimation tasks by Juan Gallostra June 2018
 */
 
-#include <cmath>
+//#include <cmath>
 #include <stdio.h>
 
 #include "algebra.h"
