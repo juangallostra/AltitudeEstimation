@@ -2,7 +2,7 @@
    filters.cpp: Filter class implementations
  */
 
-#include <cmath>
+//#include <cmath>
 #include <stdlib.h> // XXX eventually use fabs() instead of abs() ?
 
 #include "filters.h"
